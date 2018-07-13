@@ -10,6 +10,7 @@ def deploy():
     command = [
         'rsync',
         '--recursive',
+        '--verbose',
         '--exclude', '.*',
         bin_dir + '/contents/',
         remote_server + ':' + remote_dir,
