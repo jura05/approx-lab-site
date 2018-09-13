@@ -12,7 +12,7 @@ def deploy():
         '--recursive',
         '--verbose',
         '--exclude', '.*',
-        bin_dir + '/contents/',
+        bin_dir + '/../generated-content/',
         remote_server + ':' + remote_dir,
     ]
     print(command)

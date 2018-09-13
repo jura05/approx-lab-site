@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block htmltitle %}
+Laboratory site
+{% endblock %}
+{% block htmlbase %}
+    <base href="../">
+{% endblock %}
+
+{% block header %}
+    <ul class="menu">
+        <li>
+            <a href="{{ chlang_ref }}">
+                <img style="display:inline" src="media/rus.gif"/>&nbsp;РУС
+            </a>
+        </li>
+        <li><a href="en/index.html">Home</a></li></>
+        <li><a href="en/about.html">About</a></li></>
+        <li><a href="en/staff.html">Staff</a></li></>
+        <li><a href="en/events.html">Events</a></li></>
+        <li><a href="en/publications.html">Publications</a></li></>
+        <li><a href="en/contacts.html">Contacts</a></li></>
+    </ul>
+{% endblock %}
