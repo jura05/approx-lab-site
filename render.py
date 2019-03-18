@@ -20,20 +20,29 @@ def render():
     )
     common = [
         'index.html', 'about.html', 'staff.html', 'contacts.html',
-        'events.html', 'publications.html',
+        'events.html',
+        'publications.html',
     ]
-    templates = common + ['en/' + t for t in common]
-    templates.append('conf2018/index.html')
+    russian = ['seminar.html', 'spk2018.html']
+    english = []
+
     conf_tmpl = [
         'index.html', 'committee.html', 'program.html',
-        'venue.html', 'participants.html',
+        'directions.html', 'participants.html', 'contacts.html',
     ]
-    templates += ['en/conf2018/' + t for t in conf_tmpl]
+    english += ['en/conf2018/' + t for t in conf_tmpl]
+
+    templates = common + ['en/' + t for t in common] + russian + english
+    templates.append('conf2018/index.html')
 
     for tmpl_name in templates:
         tmpl = env.get_template(tmpl_name)
 
-        if tmpl_name.startswith('en/'):
+        if tmpl_name in russian:
+            chlang_ref = 'en/index.html'
+        elif tmpl_name in english:
+            chlang_ref = 'index.html'
+        elif tmpl_name.startswith('en/'):
             chlang_ref = tmpl_name[3:]
         else:
             chlang_ref = 'en/' + tmpl_name

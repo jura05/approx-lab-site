@@ -9,6 +9,7 @@ def deploy():
     remote_dir = '/var/www/vhosts/approx-lab'
     command = [
         'rsync',
+        '-e', 'ssh -p 22018',
         '--recursive',
         '--verbose',
         '--exclude', '.*',
