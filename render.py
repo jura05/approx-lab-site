@@ -22,7 +22,6 @@ def render():
     )
     common = [
         'index.html', 'about.html', 'staff.html', 'contacts.html',
-        'events.html',
         'publications.html',
     ]
     russian = ['seminar.html', 'spk2018.html']
