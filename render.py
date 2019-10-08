@@ -12,8 +12,10 @@ def render():
         shutil.rmtree(dst_dir)
     os.mkdir(dst_dir)
     os.mkdir(dst_dir + '/conf2018')
+    os.mkdir(dst_dir + '/sbs100')
     os.mkdir(dst_dir + '/en')
     os.mkdir(dst_dir + '/en/conf2018')
+    os.mkdir(dst_dir + '/en/sbs100')
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('./templates'),
@@ -31,6 +33,12 @@ def render():
         'directions.html', 'participants.html', 'contacts.html',
     ]
     english += ['en/conf2018/' + t for t in conf_tmpl]
+
+    sbs100_tmpl = [
+        'index.html',
+    ]
+    russian += ['sbs100/' + t for t in sbs100_tmpl]
+    english += ['en/sbs100/' + t for t in sbs100_tmpl]
 
     templates = common + ['en/' + t for t in common] + russian + english
     templates.append('conf2018/index.html')

@@ -1,0 +1,60 @@
+{% extends "en/base_en.html" %}
+
+{% block htmlbase %}
+    <base href="../../">
+{% endblock %}
+
+{% block content %}
+<h1>Международная конференция, посвященная 100-летию со дня рождения С.Б. Стечкина. Москва, 7&mdash;11 сентября 2020 года</h1>
+
+Оргкомитет: 
+<ul>
+    <li>Д.В. Трещёв (сопредседатель)</li>
+    <li>В.Н. Темляков (сопредседатель)</li>
+    <li>С.В. Конягин (сопредседатель)</li>
+    <li>Ю.В. Малыхин (зам. председателя)</li>
+    <li>О.С. Горяйнова (отв. секретарь)</li>
+    <li>А.Ю. Шадрин</li>
+    <li>К.С. Рютин</li>
+    <li>Н.Ю. Андреев</li>
+    <li>М.Р. Габдуллин</li>
+</ul>
+
+Программный комитет:
+<ul>
+    <li>В.И. Бердышев (сопредседатель)</li>
+    <li>Б.С. Кашин (сопредседатель)</li>
+    <li>Н.Ю. Антонов</li>
+    <li>В.В. Арестов</li>
+    <li>О.В. Бесов</li>
+    <li>В.И. Иванов</li>
+    <li>С.В. Конягин</li>
+    <li>Б. Сендов</li>
+    <li>С.А. Теляковский</li>
+    <li>В.Н. Темляков</li>
+    <li>Н.Н. Холщевникова</li>
+    <li>И.Г. Царьков</li>
+    <li>Н.И. Черных</li>
+    <li>А.Ю. Шадрин</li>
+</ul>
+
+<table>
+<tr>
+    <td style="vertical-align:top">
+        <ul class="left_menu">
+            <li><a href="sbs100/index.html">Home</a></li>
+            <!-- <li><a href="conf2018/committee.html">Committee</a></li>
+            <li><a href="conf2018/directions.html">Directions</a></li>
+            <li><a href="conf2018/participants.html">Participants</a></li>
+            <li><a href="conf2018/program.html">Program</a></li>
+            <li><a href="conf2018/contacts.html">Contacts</a></li> -->
+        </ul>
+    </td>
+    <td style="vertical-align:top">
+        {% block confcontent %}
+        {% endblock %}
+    </td>
+</tr>
+</table>
+
+{% endblock %}
