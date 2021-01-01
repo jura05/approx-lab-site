@@ -1,0 +1,584 @@
+\documentclass[handout]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usetheme{Boadilla}
+
+\colorlet{beamer@blendedblue}{green!40!black}
+
+\setbeamertemplate{navigation symbols}{}
+\title{Спецкурс 2020/2021: ``Геометрические и комбинаторные свойства матриц и
+аппроксимация'' \\ Блок лекций ``Сложность матриц и аппроксимация'' \\ Лекция 3:
+``Жёсткие матрицы''}
+\renewcommand\le{\leqslant}
+\renewcommand\ge{\geqslant}
+
+\newcommand\R{\mathbb R}
+\newcommand\N{\mathbb N}
+\newcommand\Z{\mathbb Z}
+\newcommand\T{\mathbb T}
+\newcommand\CC{\mathbb C}
+\newcommand\eps{\varepsilon}
+
+
+\newcommand{\tvec}{\mathbf{t}}
+
+\newcommand\E{\mathsf E}
+\renewcommand\P{\mathsf P}
+
+%\newtheorem*{theorem}{Теорема}
+%\newtheorem{lemma}{Лемма}
+\newtheorem*{statement}{Statement}
+%\newtheorem*{conjecture}{Гипотеза}
+%\newtheorem*{remark}{Замечание}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\Rig}{Rig}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Arg}{Arg}
+\DeclareMathOperator{\Real}{Re}
+
+\begin{document}
+\maketitle
+
+\begin{frame}{Жесткость матрицы и линейные схемы}
+
+Жесткость матрицы (Rigidity):
+$$
+    \Rig(A,r) := \min_{\rank B\le r} \#\{(i,j)\colon A_{i,j}\ne B_{i,j}\}.
+$$
+\pause
+    \textcolor{red}{Разминка!}
+    \begin{itemize}
+        \item вычислите $\Rig(\mathrm{Id}_n,r)$;
+            \pause
+        \item оцените $\Rig(A,r)$ сверху для произвольной матрицы $A\in\R^{n\times n}$;
+            \pause
+        \item оценить $\Rig(\Delta_n,n/100)$ для верхнетреугольной
+            $\{0,1\}$-матрицы $\Delta_n$.
+    \end{itemize}
+            \pause
+\end{frame}
+
+\begin{frame}
+    Понятие жёсткости возникло в теории сложности в контексте \textit{линейных
+    схем}, вычисляющих
+линейные функций $x\mapsto Ax$. Работа Leslie Valiant-а 1977 года.
+\pause
+    
+Схема состоит из узлов, на входе $n$ узлов-переменных
+$x_1,\ldots,x_n$, на выходе должны быть узлы $y_i$, так чтобы
+$(y_1,\ldots,y_n)=Ax$, промежуточные узлы: элементы сложения (с двумя
+    входами) и умножения на скаляр. Узлы соединены в \textbf{ориентированный
+    ацикличный граф}.
+\pause
+    \begin{itemize}
+        \item размер схемы = количество рёбер;
+        \item глубина = длина максимального пути;
+    \end{itemize}
+
+Можно вычислить любое отображение $\mathbb{F}^n\to\mathbb{F}^n$ схемой размера
+$O(n^2)$ и глубины $O(\log n)$. \textcolor{red}{Почему?}
+
+\end{frame}
+\begin{frame}
+
+\begin{theorem}[Valiant]
+    Если линейное отображение $A\colon\mathbb{F}^n\to\mathbb{F}^n$ можно вычислить схемой размера $s$ и
+    глубины $d$, то для любого $t>1$
+    $$
+    \Rig(A,\frac{s\log t}{\log d}) \le n2^{Cd/t}.
+    $$
+\end{theorem}
+\pause
+
+    \textbf{Следствие}: если для некоторых $\eps,\delta>0$ имеем $\Rig(A,\eps
+    n)\ge n^{1+\delta})$, то схема, вычисляющая преобразование $x\mapsto Ax$ и имеющая
+    логарифмическую глубину, имеет размер не менее $c(\eps,\delta)n\log\log n$.
+    \pause
+
+    Для случайных матриц над бесконечным полем $\Rig(A,r)=(n-r)^2$.
+
+    \textbf{Проблема}: построить явное семейство жёстких матриц $n\times n$:
+    $\Rig(A_n,\eps n)\ge n^{1+\delta}$.
+    
+\end{frame}
+
+
+\begin{frame}
+    Поработаем с ориентированными ацикличными графами.
+    \pause\vspace{5pt}
+    
+    Назовём \textit{разметкой} графа $G=(V,E)$ отображение $L\colon V\to\mathbb
+    Z$, такое что для всякого ребра $(u, v)\in E$ имеем $L(u) < L(v)$.
+    \pause\vspace{5pt}
+
+    Если есть разметка $L\colon V\to\{1,2,\ldots,d\}$, то глубина графа не
+    больше $d$.
+    \pause\vspace{5pt}
+
+    Всякий граф глубины $d$ может быть размечен числами $\{1,2,\ldots,d\}$.
+    \textcolor{red}{Почему?}
+\end{frame}
+
+
+\begin{frame}
+    Для доказательства теоремы Valiant-а нам потребуется утверждение из теории
+    графов. Его доказал...\pause Valiant.\pause
+
+    \begin{lemma}
+        Пусть $(V,E)$~--- ориентированный ацикличный граф глубины не выше $d$ и
+        задано число $r$.
+        Тогда можно удалить из графа не более
+        $|E|\cdot r/\log_2 d$
+        рёбер так, что глубина оставшегося графа будет не выше $d/2^r$.
+    \end{lemma}
+    В лемме для простоты считаем, что $d$ равно степени двойки.
+\end{frame}
+    
+    \begin{frame}
+    \begin{proof}
+        Рассмотрим разметку $L\colon V\to\{0,1,\ldots,d-1\}$ и отождествим
+        $\{0,1,\ldots,d-1\}$ с двоичными строками длины $\log_2d$ (двоичная
+        запись числа).
+        \pause\vspace{5pt}
+
+        Возьмём ребро $(u,v)\in E$, тогда $L(u)<L(v)$.
+        Пусть старший бит, где отличаются $L(u)$ и $L(v)$ это $i$-й бит.
+        Через $E_i$ обозначим множество таких рёбер.
+        \pause\vspace{5pt}
+
+        Пусть мы удалили $E_i$. Тогда из разметки можно удалить $i$-й бит и
+        свойство разметки будет выполнено!
+        \pause\vspace{5pt}
+        
+        Т.к. разметка принимает $(\log_2d-1)$-битные значения, получится глубина
+        не больше $d/2$.
+        \pause\vspace{5pt}
+
+        При удалении $r$ множеств $E_i$ получим глубину не более $d/2^r$.
+        \pause\vspace{5pt}
+
+        Выберем $E_{i_1},\ldots,E_{i_r}$ минимальной мощности. Выбираем $r$
+        штук из $\log_2d$ с суммарной мощностью $|E|$, получим
+        $|E_{i_1}|+\ldots+|E_{i_s}|\le |E|\cdot r/\log_2 d$.
+    
+    \end{proof}
+
+\end{frame}
+
+\begin{frame}
+    Перейдём к доказательству теоремы Valiant-а. Пусть для матрицы $A$ есть
+    схема размера $s$; приблизим $A$ матрицей малого ранга.
+    \pause\vspace{5pt}
+
+    Положим $t=2^r$ и удалим $m\le|E|\cdot r/\log_2d=sr/\log_2d$ рёбер так, чтобы
+    остался граф глубины не более $d/t$.
+    \pause\vspace{5pt}
+
+    В каждой вершине графа вычисляется линейная форма от входов
+    $x_1,\ldots,x_n$. Пусть $b_1,\ldots,b_{m'}$~--- линейные формы в вершинах на
+    концах удалённых рёбер ($m'\le m$).
+    \pause\vspace{5pt}
+
+    Рассмотрим фиксированную выходную вершину. Как она вычисляется? Пройдём от неё вверх и
+    посмотрим: используются либо формы $b_i$, либо непосредственно входные
+    вершины $x_j$. В силу того, что глубина графа не более $d/t$, различных
+    входных вершин не более $2^{d/t}$. Запишем это:
+    $$
+    y_i = \sum_{k=1}^{m'} \beta_{i,k} b_k(x) + \sum_{j\in\Lambda_i}c_{i,j}x_j,\quad
+    |\Lambda_i|\le 2^{d/t}.
+    $$
+\end{frame}
+
+\begin{frame}
+    $$
+    y_i = \sum_{k=1}^{m'} \beta_{i,k} b_k(x) + \sum_{j\in\Lambda_i}c_{i,j}x_j,\quad
+    |\Lambda_i|\le 2^{d/t}.
+    $$
+    В матричных терминах:
+    $$
+    y = Ax,\quad A = \beta B + C,
+    $$
+    \pause
+    где 
+    \begin{itemize}
+        \item матрица $\beta=(\beta_{i,k})$ размера $n\times m'$,
+        \item матрица $B$~--- в которой по строкам стоят коэфф-ты линейных форм
+            $b_k(x)$~--- размера $m'\times n$;
+        \item в матрице $C$ не более $2^{d/t}$ ненулевых элементов в каждой
+            строке;
+    \end{itemize}
+    \pause
+
+    Значит, мы представили $A$ в виде $\beta B+C$, где $\rank(\beta
+    B)\le m'\le m\le sr/\log_2d=s\log_2t/\log_2d$, $\|C\|_0\le n2^{d/t}$,
+    $$
+    \Rig(A,\frac{s\log_2t}{\log_2d})\le n2^{d/t}.
+    $$
+\end{frame}
+
+\begin{frame}
+    Итак, мы доказали, что если $A$ вычисляется простой схемой, то $A$ не
+    слишком жёсткая, т.е. можно приблизить в метрике Хэмминга матрицей малого
+    ранга. Заметим, что это приближение \textit{регулярно}, то есть число
+    отличий в каждой строке небольшое.
+\end{frame}
+
+\begin{frame}{Оценки снизу для конкретных матриц}
+    \begin{lemma}
+        Пусть $r\ge \log^2n$. Если в матрице $n\times n$ поменять не
+        более
+        $$
+        \frac{n(n-r)}{2r+2}\log\frac{n}{r}
+        $$
+        эл-тов, то некоторый минор $(r+1)\times (r+1)$ будет без изменений.
+    \end{lemma}
+    \pause
+
+    Предположим, мы сделали изменения в матрице. Рассмотрим двудольный граф с
+    долями $\{v_1,\ldots,v_n\}$ и $\{w_1,\ldots,w_n\}$, где ребро $v_i\mapsto
+    w_j$ проводится для тех $(i,j)$, для которых значение $A_{i,j}$ не
+    изменилось. При этом количество рёбер в графе не меньше
+    $$
+    n^2 - \frac{n(n-r)}{2r+2}\log\frac{n}{r}.
+    $$
+    Нам нужно доказать, что полученный граф содержит $K_{r+1,r+1}$.
+    Для этого воспользуемся утверждением из теории графов.
+\end{frame}
+
+\begin{frame}
+    \begin{lemma}[Zarankiewich problem]
+        Если двудольный граф с долями размера $m$ и $n$ не содержит $K_{s,t}$,
+        то количество рёбер в нём не превосходит
+        $$
+        (s-1)^{1/t}(n-t+1)m^{1-1/t}+(t-1)m.
+        $$
+    \end{lemma}
+    \pause
+    Матричная формулировка: если в матрице из $\{0,1\}^{m\times n}$ более
+    указанного числа единиц, то найдётся подматрица $s\times t$ из одних единиц.
+    \pause
+
+    Доказательство.
+        Пусть $|V_1|=m$, $|V_2|=n$~--- доли графа.
+        Рассмотрим $t$-множества $T\subset V_2$, $|T|=t$. Скажем, что $x\in V_1$
+        \textit{покрывает} $T$, если $x$ соединён со всеми элементами $T$.
+        \pause
+
+        Каждый $x\in V_1$ покрывает $\binom{d(x)}{t}$ множеств $T$. С другой
+        стороны, каждое $T$ покрыто не более чем $(s-1)$ точкой (иначе
+        образуется $K_{s,t}$). Следовательно,
+        $$
+        \sum_{x\in V_1}\binom{d(x)}{t} \le (s-1)\binom{n}{t}.
+        $$
+
+\end{frame}
+
+    \begin{frame}
+        $$
+        \sum_{x\in V_1}\binom{d(x)}{t} \le (s-1)\binom{n}{t}.
+        $$
+
+        Посмотрим на биномиальный коэффициент как на многочлен
+        $f(u)=\binom{u}{t}=u(u-1)\cdots(u-t+1)/t!$, это выпуклая функция при
+        $u\ge t$, следовательно,
+        $$
+        \binom{m^{-1}\sum d(x)}{t} \le \frac{s-1}{m}\binom{n}{t}.
+        $$
+        \pause
+        Обозначим $y=m^{-1}\sum d(x)=|E|/m$. Тогда
+        $$
+        \binom{y}{t}\le\frac{s-1}{m}\binom{n}{t}.$$
+        \pause
+        Ясно, что $y\le n$, поэтому тем более
+        $$
+        (y-t+1)^t \le \frac{s-1}{m}(n-t+1)^t.
+        $$
+        Это и есть нужное нам неравенство.
+
+
+\end{frame}
+
+
+\begin{frame}
+    Следствие: если все миноры матрицы $A$ невырождены, то
+    $$
+    \Rig(A,r)\ge \frac{n^2}{4r+4}\log\frac{n}{r}
+    $$
+    при $\log^2 n\le r\le n/2$.
+
+
+    Примеры:
+    \begin{itemize}
+        \item матрица Коши $(\frac{1}{x_i+y_j})_{i,j=1}^n$;
+        \item $F=(\omega^{ij})$, $\omega$~-- примитивный $n$-корень из единицы.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Матрицы Уолша--Адамара}
+    Вспомним про матрицы Уолша--Адамара $H^n$:
+    \pause
+    \begin{itemize}
+        \item размера $2^n\times 2^n$ с элементами $\pm 1$;
+        \item $H^n(x,y)=(-1)^{\langle x,y\rangle}$, $x,y\in\{0,1\}^n$;
+        \item строки и столбцы ортогональны;
+        \item сложная для коммуникации даже с неограниченной ошибкой: $U(H^n)\ge
+            cn$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+
+    Докажем следующую оценку жесткости:
+    $$
+    \Rig(H^n,r)\ge \frac{N^2}{4r},\quad\mbox{где $N=2^n$},
+    $$
+    при условии что $r$ это степень двойки.
+    \pause
+
+    Зафиксируем $x_1$ и $y_1$, получим разбиение $H^n$ на
+    четыре подматрицы $\pm H^{n-1}$.
+    \pause
+    
+    Обобщим: возьмём $s\ge 1$ и разделим $H^n$ на подматрицы $\pm H^s$.
+    Получится $N^2/2^{2s}$ штук. Если мы делаем меньше $N^2/4r$ изменений, то в
+    одной из подмариц изменится менее $2^{2s}/4r$ элементов.
+    \pause
+
+    Полагаем $2^s=2r$, тогда на одну из матриц $\pm H^s$, которая имеет ранг
+    $2^s=2r$, приходится менее $2^{2s}/4r=r$ изменений и у неё останется
+    $\rank\ge r$.
+    \pause\vspace{5pt}
+
+    Такая оценка впервые была получена в работе Б.С.Кашина и А.А.Разборова
+    (1998) для общих матриц Адамара. Отметим, что она недостаточна для
+    Valiant-жёсткости.
+
+\end{frame}
+
+\begin{frame}
+    В работе 2016 года J.Alman, R. Williams получили неожиданный результат --
+    матрицы Уолша--Адамара не являются жёсткими!
+    \pause
+
+    \begin{theorem}[Alman, Williams]
+        Для любого поля $\mathbb F$, достаточно малого $\eps>0$, 
+        $N=2^n$,
+        имеем
+        $$
+        \Rig^{\mathbb{F}}(H^n,N^{1-c\eps^2})\le N^{1+c\eps\log(1/\eps)}.
+        $$
+    \end{theorem}
+
+\end{frame}
+
+\begin{frame}{Доказательство (случай $\mathbb F\subset\mathbb Q$)}
+
+    Пусть $p(x,y)$~--- полином от $2n$ переменных ($x,y\in\{0,1\}^n$), состоящий из
+    $m$ мономов. Тогда матрица
+$$
+    M(x,y)=p(x,y),\quad x,y\in\{0,1\}^n,
+$$
+    имеет $\rank M\le m$.\pause
+
+    Действительно, каждый моном имеет вид $u(x)v(y)$ и представляет одноранговую
+    матрицу.
+\pause\vspace{5pt}
+
+    В нашем случае можно взять $p(x,y)=R(x_1y_1+\ldots+x_ny_n)$,
+    где полином $R$ альтернирует: $R(j)=(-1)^j$ для $2n\eps \le j \le
+    (1+\eps)n$.
+
+    \pause
+    Чтобы уменьшить количество мономов, мы заменим $x_i^my_i^m\mapsto x_iy_i$;
+    это не изменит значения полинома для булевых векторов.
+    \pause
+
+    Количество мономов оценивается
+    $$
+        m(p)\le \sum_{s=0}^{\deg Q}\binom{n}{s} \le
+        2^{h_2(r/n)}\le 2^{n(1-c\eps^2)}.
+    $$
+    Полагаем $M(x,y)=p(x,y)$, $\rank M\le m(p)$.
+\end{frame}
+
+\begin{frame}
+    По построению $M(x,y)=H^n(x,y)$
+    при $\langle x,y\rangle \in [2n\eps,(1/2+\eps)n]$:
+    $$
+    M(x,y)=p(x,y)=Q(\langle x,y\rangle)=(-1)^{\langle x,y\rangle}.
+    $$
+    \pause
+
+    Исправление $M$: полагаем $M'(x,y)=M(x,y)$ для ``ядра''
+    $\|x\|_1,\|y\|_1\in[(1/2-\eps)n,(1/2+\eps)n]$, и $M'(x,y)=H^n(x,y)$ иначе.
+    \pause
+
+    Изменения касаются малого кол-ва строк/столбцов и не сильно увеличат ранг.
+    \pause
+
+    Отличие $M'(x,y)\ne H^n(x,y)$ может быть только для пар $(x,y)$ вне ядра и
+    только для $\langle x,y\rangle\not\in[2n\eps,(1/2+\eps)n]$. Следовательно,
+    все расхождения содержат среди пар $(x,y)$:
+    $$
+    \begin{cases}
+        \langle x,y\rangle < 2n\eps,\\
+        \|x\|_1 \in [(1/2-\eps)n,(1/2+\eps)n],\\
+        \|x\|_1 \in [(1/2-\eps)n,(1/2+\eps)n],\\
+    \end{cases}
+    \eqno{(*)}
+    $$
+    Упражнение: для фиксированного $x$ существует не более $2^{c\eps\log(1/\eps)n}$ таких
+    $y$, что выполнено (*). Матрица $M'$ даёт нужное приближение для $H^n$.
+
+\end{frame}
+
+
+\begin{frame}
+    Примёр жёсткой матрицы. Пусть $p_{i,j}$, $1\le i,j\le n$~--- различные
+    простые числа (например, первые $n^2$ простых).
+    Рассмотрим матрицу $P=(\sqrt{p_{i,j}}) \in \R^{n\times n}$.
+    \pause
+    \begin{statement}
+        $\Rig(P,n/17)\ge n^2/17$.
+    \end{statement}
+    \pause
+
+    Это утверждение следует из теоремы
+    \begin{theorem}
+        Пусть $A\in\R^{n\times n}$ и $1\le r\le n$. Если любые $nr$ произведений
+        различных элементов $A$ линейно независимы над $\mathbb Q$, то
+        $$
+        \Rig(A,r)\ge n(n-16r).
+        $$
+    \end{theorem}
+    \pause
+
+    Известно, что все числа вида $\sqrt{k}$, где $k$ свободно от квадратов,
+    линейно независимы над $\mathbb Q$. Следовательно, к матрице $P$ применима
+    данная теорема. 
+\end{frame}
+
+
+\begin{frame}
+    Для доказательства нам потребуется несколько определений.
+    \pause
+    Пусть $X=(a_1,\ldots,a_p)$~--- последовательность чисел и $t\in\mathbb
+    N$. Определим размерности Shoup--Smolensky:
+    $$
+    D_t(X) := \dim_{\mathbb Q}\langle a_{i_1}\cdots a_{i_t}\colon 1\le
+    i_1<i_2<\ldots<i_t\le p\rangle,
+    $$
+    \pause
+    $$
+    D_t^*(X) := \dim_{\mathbb Q}\langle a_{i_1}\cdots a_{i_t}\colon 1\le
+    i_1\le i_2\le \ldots\le i_t\le p\rangle.
+    $$
+    \pause
+    Выполнены простые свойства:
+    \begin{itemize}
+        \item $D_t(X)\le D_t^*(X)$;
+            \pause
+        \item $D_t(X)\le\binom{p}{t}$;
+            \pause
+        \item $D_t^*(X)\le\binom{p+t-1}{t}$.
+            \pause
+        \item Пусть $X=(a_1,\ldots,a_p)$, $Y=(b_1,\ldots,b_q)$,
+            $XY:=(a_ib_j)_{\substack{1\le i\le p\\1\le j\le q}}$. Тогда
+            $$
+            D_t^*(XY) \le D_t^*(X)D_t^*(Y).
+            $$
+            \pause
+            \textcolor{red}{Верно ли это для $D_t$?}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    Для матрицы $A\in\R^{m\times n}$ величины $D_t(A)$ и $D_t^*(A)$ определяются
+    как соответствующие размерности для списка элементов матрицы (в произвольном
+    порядке).
+    \pause
+    Если произведение матриц $AB$ определено, то
+    $$
+    D_t^*(AB)\le D_t^*(A)D_t^*(B).
+    $$
+    \pause
+    \begin{statement}
+        Если $A\in\R^{m\times n}$ и $\rank A=r$, то
+        $$
+        D_t^*(A) \le \binom{mr+t-1}{t}\binom{nr+t-1}{t}.
+        $$
+    \end{statement}
+    \pause
+    Действительно, матрица ранга $r$ представляется в виде $A=BC$ размеров
+    $m\times r$ и $r\times n$. Далее применяем оценку 
+    $D_t^*(X)\le\binom{|X|+t-1}{t}$.
+\end{frame}
+
+
+\begin{frame}
+    Вернёмся к доказательству теоремы. Нам дано, что все произведения $nr$
+    элементов линейно независимы. Нужно оценить жёсткость.
+    \pause
+
+    Предположим, $A=B+C$, где $\rank B\le r$ и $\|C\|_0\le R$; оценим $R$ снизу.
+    \pause
+
+    $$
+    D_t(B)\le D_t^*(B) \le \binom{nr+t}{t}^2.
+    $$
+    \pause
+    С другой стороны, если рассматривать произведения элементов $B$, где
+    $C_{i,j}=0$ (и, следовательно, $B_{i,j}=A_{i,j}$, то они также линейно
+    независимы над $\mathbb Q$. Следовательно,
+    $$
+    D_t(B) \ge \binom{n^2-R}{t}.
+    $$
+    \pause
+    Сравним неравенства:
+    $$
+    \binom{n^2-R}{t} \le \binom{nr+t}{t}^2.
+    $$
+\end{frame}
+
+\begin{frame}
+    Положим $t=nr$:
+    $$
+    \binom{n^2-R}{nr} \le \binom{2nr}{nr}^2 \le 2^{4nr}.
+    $$
+    \pause
+    Воспользуемся полезным неравенством
+    $$
+    (n/k)^k \le \binom{n}{k} \le (en/k)^k,\quad 1\le k\le n.
+    $$
+    Получим
+    $$
+    ((n^2-R)/nr)^{nr} \le 2^{4nr},
+    $$
+    $$
+    (n^2-R)/nr \le 16,\quad R \ge n^2-16nr,
+    $$
+    Ч.т.д.
+\end{frame}
+
+
+\begin{frame}
+
+    \begin{thebibliography}{XXXX}
+        \bibitem{L09} S.V. Lokam, ``Complexity Lower Bounds using Linear Algebra'',
+            2009.
+        \bibitem{V77} L.~Valiant, ``Graph-theoretic arguments in low-level
+            Complexity'', 1977.
+        \bibitem{AW16} J.~Alman, R.~Williams, ``Probabilistic Rank and Matrix
+                Rigidity'', 2016, arXiv:1611.05558.
+    \end{thebibliography}
+
+
+\end{frame}
+
+\end{document}

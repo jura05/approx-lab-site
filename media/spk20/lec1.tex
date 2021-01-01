@@ -1,0 +1,340 @@
+\documentclass[handout]{beamer}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usetheme{Boadilla}
+
+\colorlet{beamer@blendedblue}{green!40!black}
+
+\setbeamertemplate{navigation symbols}{}
+\title{Спецкурс 2020/2021: ``Геометрические и комбинаторные свойства матриц и
+аппроксимация'' \\ Блок лекций ``Сложность матриц и аппроксимация'' \\ Лекция 1:
+``Коммуникационная сложность''}
+\renewcommand\le{\leqslant}
+\renewcommand\ge{\geqslant}
+
+\newcommand\R{\mathbb R}
+\newcommand\N{\mathbb N}
+\newcommand\Z{\mathbb Z}
+\newcommand\T{\mathbb T}
+\newcommand\CC{\mathbb C}
+\newcommand\eps{\varepsilon}
+
+
+\newcommand{\tvec}{\mathbf{t}}
+
+\newcommand\E{\mathsf E}
+\renewcommand\P{\mathsf P}
+
+%\newtheorem*{theorem}{Теорема}
+%\newtheorem{lemma}{Лемма}
+\newtheorem*{statement}{Statement}
+%\newtheorem*{conjecture}{Гипотеза}
+%\newtheorem*{remark}{Замечание}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\rig}{rig}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Arg}{Arg}
+\DeclareMathOperator{\Real}{Re}
+\renewcommand\C{\mathrm{C}}
+
+\begin{document}
+\maketitle
+
+\begin{frame}{Коммуникационная сложность (Yao, 1979)}
+    
+    Пусть $\mathcal X$, $\mathcal Y$~--- два конечных множества,
+    $f\colon\mathcal X\times\mathcal Y\to\{0,1\}$. Рассмотрим
+    задачу коммуникации. Есть два участника, Анна и Борис, их задача: по
+    выданным $x$ и $y$ вычислить $f(x,y)$. Трудность в том, что $x$ известно
+    только Анне, а $y$~--- только Борису. Им разрешается обмениваться сообщениями:
+    Анна посылает $a_1=A_1(x)$, Борис в ответ $b_1=B_1(y,a_1)$, и т.д. Правило
+    составления сообщений~--- протокол~--- должно гаранировать восстановление
+    $f(x,y)=b_t$ на некотором шаге.
+    \pause
+
+    Через $\C(P)$ обозначим суммарную длину (в битах) сообщений в худшем случае, если
+    используется протокол $P$. Минимально возможное значение $\C(P)$ по всем
+    протоколам называется \textit{коммуникационной сложностью} $f$ и обозначается через $\C(f)$:
+    $$
+    \C(f) := \min_P \max_{(x,y)\in\mathcal X\times\mathcal Y} \sum_{i\le t(P;x,y)}
+    \mathrm{len}(a_i(P;x,y)) + \mathrm{len}(b_i(P;x,y)).
+    $$
+\end{frame}
+
+\begin{frame}
+    Формализации понятия протокола могут немного отличаться. Для нас это не
+    играет роли, т.к. мы интересуемся величиной $\C$ с точностью до
+    мультипликативной постоянной. Один из вариантов определения протокола: бинарное дерево, в каждой
+    из вершин либо $A_v\colon\mathcal X\to\{0,1\}$, либо $B_v\colon\mathcal
+    Y\to\{0,1\}$, в листе ответ.
+    \pause\vspace{5pt}
+
+    Тривиальная оценка:
+    $$
+    \C(f)\le \lceil \log_2 |\mathcal X|\rceil + 1.
+    $$
+    Действительно, Анна кодирует элемент $x\in\mathcal X$ с помощью 
+    $\lceil \log_2 |\mathcal X|\rceil$ бит и отправляет Борису.
+    Борис восстанавливает $x$ и отправляет Анне $f(x,y)$.
+
+\end{frame}
+
+\begin{frame}{Одноцветные прямоугольники}
+
+    Получим оценку снизу на $\C(f)$. Введём понятие \textit{истории} сообщений:
+    $h=(a_1,b_1,a_2,\ldots)$. Для оптимального протокола всего не более
+    $2^{\C(f)}$ историй(*). Пусть $R_h=\{(x,y)\mapsto h\}$.
+    \begin{itemize}
+        \item $f$ на $R_h$ либо всюду $1$, либо $0$ (т.е. множество $R_h$
+            ``одноцветно'');
+        \item $R_h$ не пересекаются и их объединение есть $\mathcal
+            X\times\mathcal Y$.
+        \item $R_h$ есть прямоугольник, т.е. имеет вид $I\times J$.
+    \end{itemize}
+    \pause
+    Поясним последнее свойство. Пара $(x,y)$ попадает в историю
+    $h=(a_1,b_1,\ldots)$, когда
+    выполнены условия:
+    $$
+    A_1(x) = a_1,\;B_1(y,a_1)=b_1,\;A_2(x,a_1,b_1)=a_2,\ldots
+    $$
+    Т.е. условия распадаются на зависящие только от $x$ (нечётные) и от $y$
+    (чётные).
+    \pause\vspace{5pt}
+
+    Через $\chi(f)$ обозначим минимальное количество $f$-одноцветных
+    прямоугольников, на которые можно разбить $\mathcal X\times\mathcal Y$.
+    Из вышесказанного следует:
+
+    $$
+    \chi(f)\le 2^{\C(f)}.
+    $$
+
+\end{frame}
+
+\begin{frame}{Пример: $\mathrm{EQ}$}
+
+    Пусть $\mathcal X=\mathcal Y$ и $|X|=N$. Положим
+    $\mathrm{EQ}_N(x,y)=1$, если $x=y$ и $0$ иначе. Утверждение:
+    $\C(\mathrm{EQ}_N)\asymp \log N$.
+
+    \pause\vspace{5pt}
+
+    Оценка сверху тривиальна. Оценка снизу следует из $\C(f)\ge\log_2\chi(f)$.
+    Рассмотрим разбиение на одноцветные прямоугольники. Прямоугольник с
+    $\mathrm{EQ}_N=1$ может содержать только одну точку $(x,x)$, следовательно,
+    их не меньше $N$ и $\chi(\mathrm{EQ}_N)\ge N$.
+
+\end{frame}
+
+\begin{frame}
+    Имеет место обратное неравенство (Aho, Ullman, Yannakakis, 1983):
+    $$
+    \C(f)\ll \log^2\chi(f).
+    $$
+    \textbf{Упражнение.} Докажите неравенство. (Анна и Борис должны определить прямоугольник,
+    в котором находятся.)
+    \includegraphics[width=15cm]{rect.png}
+\end{frame}
+
+\begin{frame}{Связь с рангом}
+    Занумеруем множества: $\mathcal X=\{x_1,\ldots,x_M\}$ и $\mathcal
+    Y=\{y_1,\ldots,y_N\}$. Тогда функцию $f$ можно отождествить с матрицей из
+    $\{0,1\}^{M\times N}$:
+    $$
+    f\quad \longleftrightarrow\quad (f(x_i,y_j))_{\substack{1\le i\le M\\1\le j\le N}}.
+    $$
+    Мы будем пользоваться матричной терминологией, не оговаривая этого особо.
+    \pause\vspace{5pt}
+
+    Утверждение: $\chi(f) \ge \rank f$. Действительно, матрица $f$ представляется
+    в виде суммы матриц $f|_{R_h}$. Каждая из них имеет ранг 1 в силу того, что
+    $R_h$~--- одноцветный прямоугольник. Следствие:
+    $$
+    \C(f) \ge \log_2\chi(f) \ge \log_2 \rank f.
+    $$
+
+    Пример. Для любой невырожденной $N\times N$ матрицы имеем $\C(f)\asymp\log
+    N$.
+\end{frame}
+
+\begin{frame}{Нерешенные проблемы}
+
+    Итак, $\log\chi(f) \ll \C(f) \ll (\log\chi(f))^2$. 
+
+    \textbf{Проблема 1.} Верно ли, что $\C(f) \ll \log\chi(f)$?
+    \pause\vspace{10pt}
+
+    \textbf{Гипотеза.} Верно ли, что $\log\chi(f)\ll\log\rank f$?
+    \pause\vspace{5pt}
+
+    Гипотеза была опровергнута в серии публикаций (Alon-Seymour, Raz-Spieker, Razborov).
+    \pause\vspace{5pt}
+
+    \textbf{Проблема 2} (log-rank гипотеза). Верно ли, что $\log\chi(f)\ll (\log\rank f)^C$?
+\end{frame}
+
+\begin{frame}{Вероятностные модели}
+
+    Предположим, Анна и Борис имеют доступ к последовательностям случайных бит
+    (достаточно большой длины) и могут использовать эти биты во время исполнения
+    протокола (или: подбрасывать монету). Тогда результат работы протокола $Q$ на входе $(x,y)$ это
+    случайная величина $Q(x,y)$.
+    
+    Скажем, что протокол $Q$ вычисляет $f$ с ошибкой $\eps$, если
+    $$
+    \forall (x,y)\in\mathcal X\times\mathcal Y\quad \mathsf{P}(Q(x,y)\ne
+    f(x,y))\le \eps.
+    $$
+    (Ясно, что можно обеспечить $\eps=1/2$, просто бросая монетку.)
+    \pause\vspace{5pt}
+
+    Минимальная сложность протокола, вычисляющего $f$ с ошибкой $\le 1/3$, 
+    обозначается $R(f)$ и называется \textit{вероятностной коммуникационной
+    сложностью $f$ в модели с ограниченной ошибкой}.
+
+    Ошибку $\eps=1/3$ можно превратить в $\eps=10^{-100}$, повторив
+    действия достаточное количество раз.
+
+\end{frame}
+
+\begin{frame}{Сложность вычисления $\mathrm{EQ}_N$ с ограниченной ошибкой}
+    \begin{theorem}[Yao, Rabin]
+        $R(\mathrm{EQ}_N)\ll \log\log N$.
+    \end{theorem}
+
+    Доказательство.
+        Закодируем элементы $\mathcal X$ двоичными векторами $x\in\{0,1\}^n$,
+        где $n=\lceil\log_2N\rceil$. Вектор $x$ отождествим с многочленом
+        $x_1+x_2\xi+\ldots+x_n\xi^{n-1}$. Таким образом, у Анны и Бориса есть
+        многочлены $g(\xi)$ и $h(\xi)$ и они хотят определить, равны ли эти
+        многочлены.
+        \pause\vspace{5pt}
+
+        Заранее фиксируется простое число $p\in[3n,cn]$. Анна выбирает случайное
+        $\xi\in\{0,1,\ldots,p-1\}$ и отправляет пару $(\xi,g(\xi)\bmod p)$ Борису.
+        Борис вычисляет $h(\xi)\bmod p$ и выдаёт ``1'', если значения совпали и
+        ``0'' в противном случае.
+
+        По протоколу передаётся $\asymp\log p\asymp\log\log N$ бит, как и
+        требовалось. Какова вероятность успеха?
+\end{frame}
+
+
+\begin{frame}{Сложность вычисления $\mathrm{EQ}_N$ (продолжение)}
+    Если $g=h$, то выдаётся ``1'' безо всякой ошибки.
+
+    Если $g\ne h$, то $g-h$ это ненулевой многочлен степени не выше $n$, он
+    имеет не более $n$ корней в $\mathbb{F}_p$, то есть количество $\xi$, таких
+    что $g(\xi)=h(\xi)$, не превосходит $n\le p/3$. Значит, вероятность
+    ошибиться не больше $1/3$.
+
+\end{frame}
+
+
+\begin{frame}{Дискрепанс}
+    В детерминированной модели мы рассматривали $f$-одноцветные прямоугольники
+    (и доказывали, что их должно быть много, т.к. они в том или ином смысле малы). В вероятностной модели нужно
+    рассматривать произвольные прямоугольники $R$. Пусть $N_0(f,R)$~---
+    количество точек в $R$, для которых $f=0$, а $N_1(f,R)$~--- количество точек
+    с $f=1$. Для нижних оценок сложности нам нужно доказать, что если
+    прямоугольник большой, то он ``сбалансированный'', то есть $N_0$ и $N_1$
+    близки друг к другу.
+    \pause
+
+    Дискрепансом функции $f\colon\mathcal X\times\mathcal Y\to\{0,1\}$ назовём
+    величину
+    $$
+    \mathrm{disc}_u(f)=\max_R\frac{|N_0(f,R)-N_1(f,R)|}{|\mathcal
+    X|\times|\mathcal Y|}.
+    $$
+    Эта величина измеряет отклонение $f$ от равномерного
+    распределения, для семейства комбинаторных прямоугольников.
+    \pause
+    Возможно обобщение на другие распределения $\mu$ на множестве $\mathcal
+    X\times\mathcal Y$:
+    $$
+    \mathrm{disc}_\mu(f)=\max_R|\mu(R\cap\{f=0\})-\mu(R\cap\{f=1\})|
+    $$
+    (нам встретится эта величина позже).
+\end{frame}
+
+\begin{frame}{Дискрепанс}
+    $$
+    \mathrm{disc}_u(f)=\max_R\frac{|N_0(f,R)-N_1(f,R)|}{|\mathcal
+    X|\times|\mathcal Y|}.
+    $$
+    Если $R$~--- одноцветный прямоугольник, то $\mathrm{disc}_u(f)\ge
+    |R|/|\mathcal X\times Y|$. Суммируя по одноцветным прямоугольникам, получим
+    $\chi(f)\mathrm{disc}_u(f)\ge 1$, то есть
+    $$
+    \chi(f)\ge 1/\mathrm{disc}_u(f),\quad \C(f)\ge \log_2(1/\mathrm{disc}_u(f)).
+    $$
+    \pause\vspace{5pt}
+    Оказывается, имеет место намного более сильный результат:
+    $$
+    R(f)\gg \log(1/\mathrm{disc}_u(f)).
+    $$
+\end{frame}
+
+\begin{frame}
+    Пример: $\mathrm{IP}_n(x,y)=\sum x_iy_i\bmod 2$, $x,y\in\{0,1\}^n$.
+    \pause\vspace{5pt}
+
+    Пусть $M$~--- матрица из $\{\pm1\}^{N\times N}$. Дискрепанс определяется
+    аналогично, как максимум по комбинаторным прямоугольникам $R$ величины
+    $N^{-2}|\sum_{(i,j)\in R} M_{i,j}|$.
+    \pause
+    Применим линейную алгебру! Пусть $R=A\times B$, тогда дискрепанс 
+    равен
+    \begin{multline*}
+    N^{-2}|\sum_{(i,j)\in R} M_{i,j}| = N^{-2}|\mathsf{1}_A^t M \mathsf{1}_B|\le \\
+    \le N^{-2}\|\mathsf{1}_A\|_2\cdot\|\mathsf{1}_B\|_2\cdot\|M\|_{2\to 2} \le
+    N^{-2}|A|^{1/2}|B|^{1/2}\|M\|_{2\to 2}.
+    \end{multline*}
+    Следовательно, $\mathrm{disc}_u(M) \le N^{-1}\|M\|_{2\to 2}$.
+    \pause\vspace{5pt}
+
+    Рассмотрим матрицу $W_n$, соответствующую $2\cdot\mathrm{IP}_n-1$ (т.е.
+    значения $\{0,1\}$ заменили на $\{-1,1\}$). Получится так называемая матрица
+    \textit{Уолша--Адамара}. Нетрудно видеть, что строки
+    матрицы ортогональны и их длина равна $2^{n/2}$. Следовательно, $\|W_n\|_{2\to
+    2} = 2^{n/2}$. Значит, $\mathrm{disc}_u(\mathrm{IP}_n)=\mathrm{disc}_u(W_n)\le 2^{-n/2}$, откуда
+    $R(\mathrm{IP}_n)\gg n$.
+
+    В отличие от $\mathrm{EQ}_N$, функция $\mathrm{IP}_n$ осталась сложной даже
+    с разрешенной ограниченной ошибкой.
+\end{frame}
+
+\begin{frame}{Таблица результатов}
+    $U(f)$~--- сложность с ``неограниченной ошибкой'' (вероятность успеха
+    $>1/2$).
+    \vspace{5pt}
+
+    \begin{tabular}{|l|l|l|l|}
+        \hline
+        $f$ & $\C(f)$ & $R(f)$ & $U(f)$ \\
+        \hline
+        $\mathrm{EQ}$ & $\asymp\log N$ & $O(\log\log N)$ & $O(1)$ \\
+        $\mathrm{DISJ}$ & $\asymp\log N$ & $\asymp\log N$ & $O(\log\log N)$ \\
+        $\mathrm{IP}$ & $\asymp\log N$ & $\asymp\log N$ & $\asymp\log N$ (Forster) \\
+        \hline
+    \end{tabular}
+\end{frame}
+
+
+\begin{frame}{Список литературы}
+    \begin{itemize}
+        \item А.А.~Разборов, ``Коммуникационная сложность''.
+        \item E.~Kushilevitz, N.~Nisan, ``Communication complexity''.
+        \item S.~Arora, B.~Barak, ``Computational Complexity: A Modern Approach''.
+    \end{itemize}
+\end{frame}
+
+\end{document}

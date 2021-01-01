@@ -1,0 +1,560 @@
+\documentclass[handout]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usetheme{Boadilla}
+
+\colorlet{beamer@blendedblue}{green!40!black}
+
+\setbeamertemplate{navigation symbols}{}
+\title{Спецкурс 2020/2021: ``Геометрические и комбинаторные свойства матриц и
+аппроксимация'' \\ Блок лекций ``Сложность матриц и аппроксимация'' \\ Лекция 5:
+``Аппроксимативный ранг''}
+\renewcommand\le{\leqslant}
+\renewcommand\ge{\geqslant}
+
+\newcommand\R{\mathbb R}
+\newcommand\N{\mathbb N}
+\newcommand\Z{\mathbb Z}
+\newcommand\T{\mathbb T}
+\newcommand\CC{\mathbb C}
+\newcommand\eps{\varepsilon}
+
+
+\newcommand{\tvec}{\mathbf{t}}
+
+\newcommand\E{\mathsf E}
+\renewcommand\P{\mathsf P}
+
+%\newtheorem*{theorem}{Теорема}
+%\newtheorem{lemma}{Лемма}
+\newtheorem*{statement}{Утверждение}
+%\newtheorem*{conjecture}{Гипотеза}
+%\newtheorem*{remark}{Замечание}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Rig}{Rig}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\disc}{disc}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Arg}{Arg}
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\margin}{margin}
+\DeclareMathOperator{\mc}{mc}
+
+\begin{document}
+\maketitle
+
+
+\begin{frame}{Определение}
+Пусть $A$~--- вещественная матрица, и $\eps>0$. Определим аппроксимативный ранг
+    ($\eps$-ранг) матрицы $A$ следующим образом:\pause
+$$
+\rank_\eps(A) := \min\{\rank B\colon \max_{i,j}|A_{i,j}-B_{i,j}| \le \eps\}.
+$$
+\pause
+    \textcolor{blue}{Разминка:}\begin{itemize}\pause
+        \item пусть $A\in\{0,1\}^{M\times N}$~--- булева матрица, оцените
+            $\rank_{1/2}(A)$;\pause
+        \item если $\eps<\min|A_{i,j}|$, то $\rank_\eps(A)\ge \rank_\pm(A)$. 
+    \end{itemize}
+    \pause
+
+    Понятие $\eps$-ранга возникло в теории коммуникационной сложности, см. работы
+    Buhrman, Wolf (2001), Lee, Shraibman (2008) и другие.
+    \pause\vspace{5pt}
+
+    Вспомним, что в модели детерминированной коммуникации есть нижняя оценка
+    сложности $C(f)\ge\log_2\rank f$.
+    \pause
+
+    В модели вероятностной коммуникации с неограниченной ошибкой $U(f) \approx
+    \log \rank_\pm f$.
+    \pause
+
+
+    В модели квантовой коммуникации с ограниченной ошибкой сложность оценивается
+    через аппроксимативный ранг:
+    $$
+    Q(f) \gg \log \rank_{1/3}(f).
+    $$
+
+\end{frame}
+
+\begin{frame}{Квантовая коммуникация}
+
+    Очень кратко про квантовые вычисления.
+    \pause\vspace{5pt}
+
+    Обычные $m$ бит определяют \textit{состояние} системы~--- вектор
+    $x\in\{0,1\}^m$.
+    \pause
+    Состояние системы с квантовыми $m$ битами (qubits, кубиты) задаётся
+    \textit{амплитудой} $\alpha\colon\{0,1\}^m\to\mathbb C$, задающей
+    распределение вероятностей:
+    $$
+    \sum_x |\alpha_x|^2 = 1.
+    $$
+    \pause
+
+    При измерении состояния мы получаем вектор $y\in\{0,1\}^m$ с вероятностью
+    $\P(y)=|\alpha_y|^2$.
+    \pause\vspace{5pt}
+
+    Над состояниями можно выполнять унитарные преобразования
+    $U\colon\alpha\mapsto U\alpha$, где $UU^*=I$.
+    \pause\vspace{5pt}
+
+    Предполагается, что есть квантовая система из $m$ кубит, Анна и Борис могут
+    выполнять преобразования над своими кубитами, а также обмениваться кубитами.
+
+\end{frame}
+
+\begin{frame}{Поперечник}
+Поперечником по Колмогорову порядка $n$ множества $W$ в нормированном
+    пространстве $X$ называется величина
+    \pause
+$$
+d_n(W,X) := \inf_{\substack{L_n\subset X\\\dim L_n\le n}} \rho(W,L_n)_X,
+$$
+где $\rho(W,L)_X := \sup_{x\in W}\inf_{y\in L} \|x-y\|_X$, а $L_n$~---
+    линейные пространства размерности не выше $n$.
+\pause\vspace{5pt}
+
+Понятие поперечника возникло в теории аппроксимации в работе А.Н.~Колмогорова
+    ещё в 1936 году.\pause
+
+    Мотивация: обобщение результатов об аппроксимации алгебраическими полиномами
+    $\mathcal P_n$, тригонометрическими $\mathcal T_n$ на произвольные системы
+    из $n$ функций.
+    \pause
+
+    Теория поперечников активно развивалась в 70-е -- 80-е годы (Тихомиров, Исмагилов
+    Кашин, Глускин, Майоров, Пинкус, Лоренц и другие).
+
+\end{frame}
+
+
+\begin{frame}{Эквивалентность}
+
+    Пусть $A\in\R^{M\times N}$. Обозначим через $W_A\subset \R^N$ множество
+    векторов $A_i$~--строк матрицы $A$ ($i=1,\ldots,M$). 
+    \pause\vspace{5pt}
+    
+    Функции $\rank_\eps$ и $d_n$ обратны друг к другу:
+    $$
+    \rank_\eps(A) \le n \quad \Longleftrightarrow \quad d_n(W_A,\ell_\infty^N) \le
+    \eps.
+    $$
+    \pause\vspace{5pt}
+
+    Действительно, если матрица $B$ ранга $n$ приближает $A$ поэлементно, то строки $B$
+    приближают вектора из $W_A$ и лежат в $n$-мерном пространстве.
+    \pause
+
+    Замечания.
+    \begin{itemize}
+        \item вместо строк можно рассматривать столбцы матрицы;\pause
+        \item множество $W_A$ можно заменить на $\conv(\pm W_A)$.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Оценки для $\rank_\eps$}
+
+Мы будем пользоваться соглашением: если $\chi(A)$~--- некоторая
+характеристика матриц, то через $\chi_\eps(A)$ обозначим минимум $\chi$ в
+$\eps$-окрестности:
+$$
+\chi_\eps(A) := \inf\{\chi(B)\colon \|A-B\|_\infty \le \eps\}.
+$$
+    \pause\vspace{5pt}
+
+    Например, $\rank_\eps$.\pause~Другими важными для нас характеристиками будут
+    $$
+    \gamma_{2,\eps}(A) := \inf\{\gamma_2(B)\colon \|A-B\|_\infty\le\eps\}
+    $$
+    и \pause
+    $$
+    \|A\|_{S_p,\eps} := \inf\{\|B\|_{S_p}\colon \|A-B\|_\infty\le\eps\},
+    $$
+    где $\|A\|_{S_p} = \|\sigma(A)\|_{\ell_p}$~--- норма Шаттена.
+
+\end{frame}
+
+\begin{frame}{Спектральный метод}
+Вектор $\sigma(A)$ сингулярных чисел матрицы $A$ имеет $\rank A$ ненулевых
+координат.\pause~Следовательно,
+$$
+\|\sigma(A)\|_p \le (\rank A)^{1/p-1/q}\|\sigma(A)\|_q,\quad p\le q.
+$$
+\pause
+При $p=1$, $q=2$ получаем неравенство
+$$
+\|A\|_{\Sigma} \le \sqrt{\rank A}\cdot \|A\|_F.
+    \eqno{(*)}
+$$
+\pause
+Нормы Шаттена при $p=1,2,\infty$ обладают особыми свойствами и названиями:
+\pause
+    \begin{itemize}
+        \item $\|A\|_{S_1}=\|A\|_\Sigma$~--- следовая норма; \pause
+        \item $\|A\|_{S_2}=\|A\|_F=(\sum A_{i,j}^2)^{1/2}$~--- норма Фробениуса; \pause
+        \item $\|A\|_{S_\infty}=\|A\|_{2\to2}$~--- спектральная норма.
+    \end{itemize}
+\pause
+    Перейдём к $\eps$-окрестности: подставим в неравенство (*) матрицу $A_\eps$, на
+    которой достигается $\eps$-ранг:
+    \pause
+    $$
+    \|A\|_{\Sigma,\eps} \le \sqrt{\rank_\eps A}\cdot (\|A\|_F+\eps\sqrt{MN}).
+    $$
+    \pause
+    Мы доказали оценку снизу для $\eps$-ранга:
+    $
+    \rank_\eps(A)\ge\frac{\|A\|_{\Sigma,\eps}^2}{(\|A\|_F+\eps\sqrt{MN})^2}.
+    $
+
+\end{frame}
+\begin{frame}
+
+
+\begin{statement}
+    $$
+    \gamma_{2,\eps}(A) \le \sqrt{\rank_\eps A}\cdot (\|A\|_\infty + \eps).
+    $$
+\end{statement}
+\pause
+
+    Доказательство.
+        Ранее (см. лекцию \textnumero 4) мы доказали неравенство
+        $$
+        \gamma_2(A)\le\sqrt{\rank A}\cdot\|A\|_\infty.
+        $$
+    \pause
+
+Перейдём в этом неравенстве к $\eps$-окрестностям:
+\pause
+$$
+        \gamma_2(A_\eps) \le \sqrt{\rank_\eps A}\cdot\|A_\eps\|_\infty.
+$$
+Ч.т.д.
+\pause
+
+Мы получили нижнюю оценку для $\eps$-ранга:
+$$
+    \rank_\eps(A) \ge \frac{\gamma_{2,\eps}(A)^2}{(\|A\|_\infty+\eps)^2}.
+$$
+
+\end{frame}
+\begin{frame}{Оценка сверху}
+
+    \begin{statement}
+        $$
+        \rank_{2\eps}(A)\le C\eps^{-2}\gamma_{2,\eps}(A)^2\log(M+N).
+        $$
+    \end{statement}
+    \pause
+
+    Докажем неравенство
+    $$
+    \rank_\eps(A)\le C\eps^{-2}\gamma_2(A)^2\log(M+N),
+    \eqno{(1)}
+    $$
+    \pause
+    после чего  подставим в него $\widetilde{A}_\eps$, на которой достигается
+    $\gamma_{2,\eps}(A)$
+    \pause\vspace{5pt}
+    $$
+    \rank_{2\eps}(A) \le \rank_\eps(\widetilde{A}_\eps) \le
+    C\eps^{-2}\gamma_{2,\eps}(A)\log(M_N).
+    $$
+    \pause
+
+    Левая и правая части неравенства (1) однородны по $A$, поэтому можно заменить
+    $A$ на $A'=A/\gamma_2(A)$ и считать,
+    что $\gamma_2(A)=1$.\pause~\textcolor{red}{На самом деле нет!}\pause~Но однородность
+    есть по $\eps$!\pause~Положим $\delta = \eps/\gamma_2(A)$, тогда
+    $$
+    \rank_\eps(A) = \rank_\delta(A'),\quad \eps^{-2}\gamma_2(A)^2 =
+    \delta^{-2}\gamma_2(A')^2.
+    $$
+    \pause
+    Значит, мы можем считать, что $\gamma_2(A)= 1$ и доказывать неравенство
+    $\rank_\eps(A)\le C\eps^{-2}\log(M+N)$.
+
+\end{frame}
+\begin{frame}
+    Итак, пусть есть представление $A_{i,j}=\langle x_i,y_j\rangle$, где
+    $|x_i|,|y_j|\le 1$.
+    \pause
+
+    Воспользуемся леммой Johnson--Lindenstrauss
+    \pause
+    \begin{statement}
+        Пусть $R$~--- матрица $d\times N$ со стандартными гауссовыми элементами,
+        т.е. $R_{i,j}\sim\mathcal N(0,1)$. Тогда для любых векторов $x,y\in\R^N$,
+        $|x|,|y|\le 1$ и $\eps\in(0,1/2)$ имеем
+        $$
+        \P(|\langle \frac1{\sqrt{d}}Rx,\frac1{\sqrt{d}}Ry\rangle - \langle
+        x,y\rangle|\ge \eps)\le 2\exp(-d\eps^2/8).
+        $$
+    \end{statement}
+    \pause
+
+    Применяем это утверждение для векторов $x_i$, $y_j$ и находим, что если
+    $2MN\exp(-d\eps^2/8)<1$, то найдётся матрица $R$, такая что вектора
+    $x_i'=Rx_i/\sqrt{d},y_j'=Ry_j/\sqrt{d}\in\R^d$ и
+    $$
+    \max_{i,j}|\langle x_i',y_j'\rangle-\langle x_i,y_j\rangle|\le\eps.
+    $$
+    \pause
+
+    Мы построили требуемую аппроксимацию матрицы $A$ матрицей ранга
+    $d\asymp\eps^{-2}\log(MN)$ с погрешностью $\eps$.
+    \pause
+
+    Утверждение доказано.
+\end{frame}
+
+\begin{frame}
+    Следствие. Пусть $S$~--- сигнум $N\times N$ матрица, $\eps=1/2$. Тогда
+    $$
+    \frac13 \gamma_{2,\frac12}^2(S) \le \rank_{1/2}(S) \le C
+    \gamma_{2,\frac14}(S)^2\log N.
+    $$
+\end{frame}
+
+
+\begin{frame}{Связь $\eps$-ранга с $\margin$.}
+    Из определения максимального отступа $\min\frac{\langle
+    x_i,y_j\rangle}{|x_i|\cdot|y_j|}$ следует неравенство
+$$
+\margin(\sign B) \ge \frac{\min_{i,j} |B_{i,j}|}{\gamma_2(B)}.
+$$
+\pause
+Отсюда для произвольной сигнум-матрицы $S$ и $\eps\in[0,1)$ получим
+$$
+    \margin(S) \ge \frac{1-\eps}{\gamma_{2,\eps}(S)}.
+    $$
+    \pause
+
+Комбинируя это с полученной ранее оценкой
+$$
+    \rank_\eps(A) \ge \frac{\gamma_{2,\eps}(A)^2}{(\|A\|_\infty+\eps)^2},
+$$
+выводим неравенство
+\pause
+$$
+    \rank_\eps(S) \ge \left(\frac{1-\eps}{1+\eps}\right)^2\cdot\frac{1}{\margin^2(S)}.
+    $$
+
+
+\end{frame}
+
+\begin{frame}{Пример 1}
+    Пусть $U$~--- ортогональная матрица $N\times N$. В нулевой
+    лекции мы упоминали теорему Эккарта--Юнга:
+    $$
+    \min_{\rank B\le n}\|A-B\|_F^2 = \sum_{j>n}\sigma_j(A)^2.
+    \eqno{(\star)}
+    $$
+    \pause
+    Все сингулярные числа $U$ равны \textcolor{blue}{чему?}\pause~единице.\pause~Применим ($\star$):
+    $\|U-B\|_F^2 \ge N-n$, если $\rank B\le n$.
+    \pause
+    В теории поперечников~--- ``теорема о поперечнике октаэдра'':
+    $$
+    d_n(B_1^N,\ell_2^N) = \inf_{L_n}(N^{-1}\sum_{j=1}^N\rho(e_j,L_n)^2)^{1/2}
+    = \sqrt{1-n/N}.
+    $$
+    (Нижняя оценка следует из матричной формы; интересно, что она точна для
+    поперечника.)
+    \pause
+    Пусть $n=N/2$, тогда $\|U-B\|_F^2\ge N/2$.
+    Очевидно, $\|U-B\|_F^2 \le N^2\|U-B\|_\infty^2$, откуда $\|U-B\|_\infty\ge
+    (2N)^{-1/2}$,
+    $$
+    \rank_{\eps}(U) \ge N/2,\quad\mbox{если $\eps<\frac{1}{\sqrt{2N}}$.}
+    $$
+    \pause
+    Следствие: для матрицы Адамара $\rank_\eps(H)\ge N/2$ для $\eps=1/\sqrt{2}$.
+    %\textbf{Упражнение.} Получите аналогичную оценку для произвольного $\eps<1$.
+\end{frame}
+
+
+\begin{frame}{Пример 2}
+    Пусть $E$~--- единичная $N\times N$ матрица. Оценим $\rank_{1/3}(E)$. \pause
+
+    Из оценки $\rank_\eps(A)\ll \eps^{-2}\gamma_2(A)\log N$ и равенства
+    $\gamma_2(E)=1$ следует, что $\rank_{1/3}(E)\ll\log n$.\pause
+
+    Оценку снизу удобно доказывать в терминах поперечников. $\conv
+    W_E=\conv\{\pm e_i\} = B_1^N = \{x\colon \|x\|_{\ell_1^N}\le 1\}$.
+    \pause
+    $$
+    \rank_\eps(E_N)\le n \quad \Longleftrightarrow \quad
+    d_n(B_1^N,\ell_\infty^N).
+    $$
+    \pause
+    Мы докажем, что  $\rank_{1/3}(E)\gg\log N$.
+    Эквивалентно, нужно показать, что если $n$-мерное пространство $L_n$
+    приближает октаэдр в $\ell_\infty^N$ с точностью $\le1/3$, то $n\gg\log
+    N$.
+\end{frame}
+
+\begin{frame}
+    Используем соображения \textit{энтропии}. Сформулируем идею в общем
+    виде, для оценки поперечника $d_n(W,X)$.
+    \pause
+
+    Пусть тело $W$ лежит в единичном шаре $X$ и в нём нашлось $M$ точек
+    $x_1,\ldots,x_M$ с попарными расстояниями $\|x_i-x_j\|\ge 3\eps$.\pause
+
+    Пусть также $n$-мерное пространство $L_n$ приближает $W$ в норме $X$ с
+    точностью $\eps$.
+    \pause
+
+    Сопоставим каждой точке $x_i$ элемент $y_i\in L_n$, $\|x_i-y_i\|\le\eps$.
+    Тогда $\|y_i-y_j\| \ge \eps$. При этом $\|y_i\|\le 1+\eps$.\pause
+
+    Но в маломерном шаре $B_X\cap L_n$ не может быть слишком много попарно удалённых точек: открытые шары
+    $B(y_i,r=\eps/2)$ не пересекаются  лежат в шаре радиуса $(1+3\eps/2)$.
+    \pause
+    $$
+    M\cdot(\eps/2)^n \le (1+3\eps/2)^n,\quad n \ge \frac{\log M}{(3+2/\eps)}.
+    $$
+    \pause
+
+    В случае $B_1^N$ берём просто вектора $e_1,\ldots,e_N$, т.е. $M=N$, и получаем
+    оценку $n\gg \log N$. Однако метод работает и для других тел, например, шара
+    $B_2^N$.
+    \pause
+
+    Основные результаты по поперечнику октаэдра в $\ell_\infty$ были получены в работах Кашина и
+    Глускина.
+\end{frame}
+
+\begin{frame}{Пример 3}
+    Пусть $\Delta^N$~--- верхнетреугольная $0/1$ матрица, т.е. $\Delta_{i,j}=1$
+    при $j\ge i$ и $\Delta_{i,j}=0$ в остальных случаях.
+    \pause
+
+    \textbf{Проблема.} Оценить $\rank_{1/3}(\Delta^N)$. \textcolor{red}{Порядок
+    этой величины неизвестен!}.
+    \pause
+
+    Мы докажем, что
+    $$
+    c\log^2 N \le \rank_{1/3}(\Delta^N) \le C\log^3N.
+    $$
+    \pause
+    Для оценки сверху воспользуем неравенством
+    $\rank_{1/3}\ll\gamma_2^2\log N$ и соотношением
+    $$
+    \gamma_2(\Delta^N) \asymp \log N.
+    \eqno{(**)}
+    $$
+    \pause
+
+    Докажем оценку сверху в (**).\pause
+    
+    Вспомним эквивалентное выражение для $\gamma_2$-нормы:
+    $$
+    \gamma_2(\Delta^N) = \max_{\|A\|_{2\to2}\le 1}\|A\circ\Delta^N\|_{2\to 2}.
+    $$
+\end{frame}
+
+\begin{frame}
+    Требуется доказать, что если $\|A\|_{2\to2}\le 1$, то
+    $\|A\circ\Delta^N\|_{2\to2}\ll \log N$.
+    \pause
+
+    Без ограничения общности считаем, что $N=2^k$. Треугольник $\{(i,j)\colon
+    j\ge i\}$ мы разрежем на части $R_i$, $i=1,\ldots,k$, так что
+    $$
+    \|A\circ R_i\|_{2\to2}\le 1.
+    $$
+    \pause
+    Тогда $\|A\circ\Delta^N\|_{2\to2}\le k$.
+    \pause
+
+    Первый блок $R_1$ это верхняя правая четверть~--- квадрат $\{(i,j)\colon
+    1\le i\le 2^{k-1},\;2^{k-1}< j\le 2^k\}$.
+    \pause
+    
+    Для множества $I\times J$ имеем
+    $$
+    |A\circ(I\times J)x|=|(Ax_J)_I| \le |Ax_J| \le |x_J| \le |x|,
+    $$
+    так что $\|A\circ(I\times J)\|\le 1$.
+    \pause
+
+    В качестве $R_2$ берём объединение двух квадратов в оставшися двух
+    прямоугольниках: $R_2=(I'\times J')\sqcup (I''\times J'')$, тогда
+    \begin{multline*}
+    |A\circ(I'\times J' \sqcup I''\times J'')x|^2=|(Ax_{J'})_{I'} +
+    (Ax_{J''})_{I''}|^2 = \\ |(Ax_{J'})_{I'}|^2 + |(Ax_{J''})_{I''}|^2 \le
+    |x_{J'}|^2 + |x_{J''}|^2 \le |x|^2.
+    \end{multline*}
+    И т.д. (нужно нарисовать картинку).
+\end{frame}
+
+
+\begin{frame}
+    Теперь нужно оценить $1/3$-ранг снизу. Воспользуемся оценкой
+    $$
+    \rank_{1/3}(A)\gg \gamma_{2,1/3}(A)^2.
+    $$
+    \pause\vspace{5pt}
+
+    Рассмотрим матрицу Гильберта
+    $$
+    G_{i,j}=\begin{cases}
+        0,&\quad i=j,\\
+        \frac{1}{i-j},&\quad i\ne j.
+    \end{cases}
+    $$
+    \pause
+    Хорошо известно, что $\|G\|\le C$.
+    С другой стороны, при вырезании верхнего треугольника в $G\circ\Delta$
+    остаётся только отрицательная часть, получается матрица нормы $\asymp\log
+    N$.
+    \pause
+    
+    Действительно, при действии $G\circ\Delta$ на вектор из одних
+    единиц половина координат будет по модулю не меньше
+    $\sum_1^{N/2}1/k\asymp\log N$. Отсюда $\gamma_2(G)\gg\log N$.
+    \pause
+
+    Если $\|\Delta^N-\widetilde\Delta^N\|_\infty\le 1/3$, то работают
+    аналогичные соображения, поэтому также $\gamma_{2,1/3}(\Delta^N)\gg\log N$.
+    \pause
+    
+    Итак, мы доказали, что
+    $$
+    c\log^2 N \le \rank_{1/3}(\Delta^N) \le C\log^3N.
+    $$
+    
+\end{frame}
+
+
+\begin{frame}
+    \begin{thebibliography}{XXXX}
+        \bibitem{ALSV}
+            N.~Alon, T.~Lee, A.~Shraibman, S.~Vempala,
+            ``The approximate rank of a matrix and it's algorithmic applications'',
+            \textit{Proc. of the 2013 ACM Symposium on Theory of Computing}, 675--684.
+
+        \bibitem{2} S.V.~Lokam, ``Complexity Lower Bounds using Linear
+            Algebra'' (2009).
+
+        \bibitem{3} Б.С.~Кашин, Ю.В.~Малыхин, К.С.~Рютин, ``Поперечник по
+            Колмогорову и аппроксимативный ранг'' (2018).
+    \end{thebibliography}
+\end{frame}
+
+\end{document}

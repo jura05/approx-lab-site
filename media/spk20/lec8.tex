@@ -1,0 +1,450 @@
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usetheme{Boadilla}
+
+\colorlet{beamer@blendedblue}{green!40!black}
+
+\setbeamertemplate{navigation symbols}{}
+\title{Спецкурс 2020/2021: ``Геометрические и комбинаторные свойства матриц и
+аппроксимация'' \\ Блок лекций ``Сложность матриц и аппроксимация'' \\ Лекция 8:
+``Сложность булевых функций, матриц и графов''}
+\renewcommand\le{\leqslant}
+\renewcommand\ge{\geqslant}
+
+\newcommand\R{\mathbb R}
+\newcommand\N{\mathbb N}
+\newcommand\Z{\mathbb Z}
+\newcommand\T{\mathbb T}
+\newcommand\CC{\mathbb C}
+\newcommand\eps{\varepsilon}
+
+
+\newcommand{\tvec}{\mathbf{t}}
+
+\newcommand\E{\mathsf E}
+\renewcommand\P{\mathsf P}
+
+%\newtheorem*{theorem}{Теорема}
+%\newtheorem{lemma}{Лемма}
+\newtheorem*{statement}{Утверждение}
+%\newtheorem*{conjecture}{Гипотеза}
+%\newtheorem*{remark}{Замечание}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Rig}{Rig}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\disc}{disc}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Arg}{Arg}
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\margin}{margin}
+\DeclareMathOperator{\mc}{mc}
+
+\begin{document}
+\maketitle
+
+\begin{frame}{Функции, матрицы и графы}
+    \textcolor{gray}{Напомним обозначение $[n]:=\{1,2,\ldots,n\}$.}
+
+    \begin{itemize}
+        \item Функция $f\colon [M]\times [N]\to\{0,1\}$.\pause
+        \item Матрица $M_f\in\{0,1\}^{M\times N}$, где $M_f(x,y)=f(x,y)$.\pause
+    \end{itemize}
+
+    Нижние оценки $\rank M_f$, $\rank_\pm M_f$, $\rank_\eps M_f$ дают
+    оценки снизу для различных вариантов коммуникационной сложности $f$.
+    Используются методы линейной алгебры: нормы (Шаттена, операторные,
+    $\gamma_2$), SVD, умножение Шура и Кронекера.\pause
+
+    \begin{itemize}
+        \item Двудольный граф $G_f$ с долями $X=[M]$, $Y=[N]$ и ребрами $x\to y$
+            для $f(x,y)=1$.
+    \end{itemize}
+    \pause
+
+    Применим методы теории графов для получения оценок сложности $G_f$ и
+    ассоциированных с ним объектов $f$, $M_f$.
+
+\end{frame}
+
+\begin{frame}{Матрица инцидентности}
+
+    Вначале поговорим о связи между графами и матрицами. Пусть $G=(V,E)$~---
+    произвольный неориентированный граф. Пронумеруем вершины:
+    $V=\{v_1,\ldots,v_n\}$.
+    \pause\vspace{5pt}
+
+    \textit{Матрицей инцидентности} графа $G$ называется матрица $A=A(G)$ размера
+    $n\times n$, такая что $A_{i,j}=1$ тогда и только тогда, когда в графе
+    есть ребро $v_i-v_j$.
+    \pause\vspace{5pt}
+
+    Рассмотрим свойства матрицы инцидентности. Во-первых, $A(G)$ по определению
+    симметрична и обладает вещественным спектром $\{\lambda_i(A)\}$. Отметим,
+    что спектр не зависит от способа нумерации вершин; можно говорить о спектре
+    графа: $\lambda_i(G)$.
+    \pause\vspace{5pt}
+
+    Напомним, что степенью вершины в графе называется количество рёбер, которые
+    из неё выходят: $\deg(v)=|\{e\in E\colon v\in e\}|$.
+\end{frame}
+
+\begin{frame}{Свойства матрицы инцидентности}
+    \begin{statement}
+        Пусть $G=(V,E)$~--- неориентированный граф из $n$ вершин, $A$~--- его
+        матрица инцидентности. Выполнены свойства:\pause
+        \begin{itemize}
+            \item $|\lambda_i(G)|\le \max\deg(v)$; \pause
+            \item если $G$~--- двудольный граф и $\lambda$~--- собственное
+                значение $G$, то $(-\lambda)$ тоже собственное значение, той
+                же кратности; \pause
+            \item $\min\deg(v)\le \lambda_{\max} \le \max\deg(v)$; \pause
+            \item для индуцированного подграфа $H$ имеем
+                $$
+                \lambda_{\min}(G)\le\lambda_{\min}(H)\le\lambda_{\max}(H)\le\lambda_{\max}(G).
+                $$
+        \end{itemize}
+    \end{statement}
+
+    %Для доказательства удобно рассмотреть $n$-мерное пространство функций
+    %$f\colon V\to\R$. 
+\end{frame}
+
+\begin{frame}{Доказательство свойств}
+    Докажем, что $|\lambda|\le \max\deg(v)$ для всех собственных значений. Пусть
+    $x$~--- собственный вектор с этим собственным значением. Считаем, что
+    координата $|x_p|$ максимальна по модулю.\pause
+    $$
+    |(Ax)_p| = |\lambda| \cdot |x_p|,
+    $$
+    $$
+    |(Ax)_p| = |\sum_j A_{p,j}x_j| \le \sum_j A_{p,j}|x_j| \le \deg(v_p)|x_p|
+    \le \max\deg(v)\cdot |x_p|.
+    $$
+    \pause\vspace{5pt}
+
+    Докажем теперь симметричность спектра двудольного графа с долями $V_1$ и
+    $V_2$. Пусть $b_i=1$ для $v_i\in V_1$ и $b_i=-1$ для $v_i\in V_1$.
+    Рассмотрим изоморфизм $x\mapsto bx$. Пусть $Ax=\lambda x$, вычислим $A(bx)$.
+    \pause\vspace{5pt}
+
+    Для $i\colon v_i\in V_1$ имеем
+    \begin{multline*}
+    (A(bx))_i = \sum A_{i,j}b_jx_j = \sum_{v_j\in V_1} A_{i,j}x_j - \sum_{v_j\in
+    V_2} A_{i,j}x_j = -\sum_{v_j\in V_2}A_{i,j}x_j = \\
+    = -\sum_{j=1}^n A_{i,j}x_j = -\lambda x_i = -\lambda (bx)_i.
+    \end{multline*}
+\end{frame}
+
+\begin{frame}{Доказательство свойств}
+    Докажем, что $\min\deg(v)\le \lambda_{\max} \le \max\deg(v)$. Оценка сверху
+    уже была доказана. Для оценки снизу заметим, что $\langle Ax,x\rangle
+    \le\lambda_{\max}$ для любого единичного $x$. Подставим
+    $x=n^{-1/2}(1,1,\ldots,1)$:\pause
+    $$
+    \frac1n\langle A\mathbf{1},\mathbf{1}\rangle = \frac1n\sum_{k,l=1}^n A_{k,l}
+    = \frac1n\sum_{k=1}^n \deg(v_k) \ge \min\deg(v).
+    $$
+    \pause
+
+    Для доказательства $\lambda_{\max}(H)\le\lambda_{\max}(G)$ нужно взять
+    вектор, максимизирующий $\langle A_Hx,x\rangle$.
+\end{frame}
+
+\begin{frame}{Хроматическое число}
+    Из доказанных свойств вытекает следствие.
+    \begin{statement}
+    Хроматическое число графа $G$ оценивается величиной
+    $\chi(G)\le\lambda_{\max}(G)+1$.
+    \end{statement}
+    \pause\vspace{5pt}
+    
+    Действительно, для любого индуцированного
+    подграфа $H$ имеем $\min_{v\in V_H}\deg(v)\le
+    \lambda_{\max}(H)\le\lambda_{\max}(G)$. Докажем, что если всегда
+    $\min\deg\le K$, то граф можно покрасить в $K+1$ цвет.
+    \pause\vspace{5pt}
+
+    Пусть $x_n$~--- вершина $G$ степени не выше $K$. Положим $H_{n-1}=G-\{x_n\}$
+    и возьмём в нём вершину $x_{n-1}$, и т.д. В последовательности
+    $x_1,x_2,\ldots,x_n$ каждый $x_j$ соединяется не более чем с $K$ вершинами
+    перед ним. Значит, можно красить их жадным образом.
+
+\end{frame}
+
+\begin{frame}{Сложность формул}
+    Пусть $f\colon\{0,1\}^n\to\{0,1\}$~--- булева функция от $n$ переменных. Схемой,
+    реализующей функцию $f$, называется ацикличный ориентированный граф с $n$
+    входными узлами (соответствующими переменным $x_i$), вычислительными узлами
+    ($y_i\&y_j$, $y_i\vee y_j$, $\neg y_i$) и выходом, в котором должно вычисляться
+    значение $f$.
+    \pause\vspace{5pt}
+    
+    Схема называется \textit{формулой}, если промежуточные узлы нельзя
+    переиспользовать~--- из каждого идёт только одно выходное ребро.
+    \pause\vspace{5pt}
+
+    Сложностью $L(f)$ реализации $f$ в виде формулы назовём минимальный размер
+    формулы, вычисляющей $f$.
+\end{frame}
+
+\begin{frame}{Сложность двудольных графов}
+    Рассматриваем двудольные графы с фиксированными долями $X$ и $Y$. Граф
+    отождествим со множеством его рёбер: $G\subset X\times Y$.
+    \pause\vspace{5pt}
+
+    При определении сложности графа нужно задать ``начальные'' элементы, из
+    которых он собирается, и элементарные операции (которые происходят в
+    вычислительных узлах).
+    \pause\vspace{5pt}
+
+    \begin{itemize}
+        \item операции: объединение и пересечение множества рёбер, т.е. для
+            $G_1$ и $G_2$ можно вычислить $G_1\cap G_2$ и $G_1\cup G_2$;
+        \item начальные элементы: графы вида $A\times Y$ и $X\times B$,
+            множество таких графов обозначим $\mathcal B$;
+    \end{itemize}
+    \pause\vspace{5pt}
+
+    Аналогично булевым функциям, определяются схемы и формулы, вычисляющие
+    данный граф. Будем обозначать $L_{\mathcal B}(G)$ сложность реализации графа в виде
+    формулы с начальными элементами из $\mathcal B$.
+
+\end{frame}
+
+\begin{frame}{Связь между сложностью функции и графа}
+    Пусть $f$~--- булева функция от
+    $2n$ переменных. Запишем её в виде $f\colon\{0,1\}^n\times\{0,1\}^n\to
+    \{0,1\}$ и рассмотрим соответствующий граф $G_f$.
+    \pause\vspace{5pt}
+
+    \textcolor{blue}{Сравните функции и графы:}
+    \begin{itemize}
+        \item Какие графы соответствуют функциям $f_1\& f_2$, $f_1\vee
+            f_2$?\pause~Графы $G_{f_1}\cap G_{f_2}$ и $G_{f_1}\cup G_{f_2}$,
+            соответственно.\pause
+        \item Какой граф у функции $f(x_1,\ldots,x_n,y_1,\ldots,y_n)=x_i$? А у
+            функции $y_j$?\pause~В первом случае это полный двудольный подграф
+            вида $K_{N/2,N}$, $N=2^N$.\pause
+        \item Как соотносятся сложности функции $L(f)$ и графа $L_{\mathcal
+            B}(G_f)$?\pause
+            $$
+            L_{\mathcal B}(G_f) \le L(f).
+            $$
+            \textcolor{blue}{Что делать с отрицаниями?}\pause~Поскольку это
+            формула, то можно их загнать в переменные.
+    \end{itemize}
+
+    Итак, сложность двудольного графа даёт нижнюю оценку обычной 
+    сложности булевых функций.
+\end{frame}
+
+
+\begin{frame}{Пример: функция чётности}
+    Рассмотрим
+    $$
+    f(x_1,\ldots,x_n,y_1,\ldots,y_n)=x_1\oplus x_2\oplus\cdots\oplus
+    x_n\oplus y_1\oplus\cdots\oplus y_n.
+    $$
+    Известно, что эту функцию нельзя вычислить схемой константной глубины,
+    используя полиномиальное число узлов вида $\&$ и $\vee$ (даже с
+    произвольным кол-вом входов). Используя обычный базис, можно сделать формулу
+    глубины $\asymp\log n$.
+    \pause\vspace{5pt}
+
+    \textcolor{blue}{Какой вид имеет граф $G_f$? Оцените его
+    сложность.}\pause
+    
+    $G_f=(A\times\overline{A})\cup(\overline{A}\times A)$, где
+    $A$ это множество векторов $\{0,1\}^n$ с чётным числом единиц.
+
+\end{frame}
+
+
+\begin{frame}{Пример: матрица Адамара}
+    Пусть $H_n$~--- матрица Уолша--Адамара размера $N\times N$, $N=2^n$. Пусть $G$~---
+    соответствующий граф (проводим ребро $x-y$, если $H_n(x,y)=1$).
+    \pause\vspace{5pt}
+    
+    Матрица Адамара сложные с точки зрения коммуникационной сложности (Forster:
+    $\rank_\pm H\ge \sqrt{N}$). Что можно сказать про граф?
+    \pause\vspace{5pt}
+
+    Соответствующая булевая функция имеет вид
+    $$
+    f(x_1,\ldots,x_n,y_1,\ldots,y_n)=x_1y_1\oplus x_2y_2\oplus\cdots\oplus
+    x_ny_n.
+    $$
+    Она вычисляется формулой с $O(n)$ элементами глубины $O(\log n)$. 
+    \pause\vspace{5pt}
+
+    \textbf{Упражение}: придумайте схему константной глубины для вычисления
+    графа.
+
+
+\end{frame}
+
+\begin{frame}{Проективная и аффинная размерности графа}
+    Дадим различные оценки сложности графов. Пусть
+    $G=(V,E)$~--- произвольный неориентированный граф.
+    \pause\vspace{5pt}
+
+    Говорят, что задана \textit{проективная реализация} графа $G=(V,E)$ в линейном
+    пространстве $U$ над полем $\mathbb F$, если для каждой вершины $v\in V$
+    задано линейное пространство $U_v\subset U$, так что 
+    $$
+    (v,w)\in E\quad\Longleftrightarrow\quad U_v\cap U_w \ne \{0\}.
+    $$
+    \pause\vspace{5pt}
+
+    Проективной размерностью графа $\mathrm{pdim}_{\mathbb F}(G)$ назовём минимальную
+    размерность пространства $U$, в котором существует его проективная реализация.
+    \pause\vspace{5pt}
+
+    Аналогично определяется \textit{аффинная размерность}, только линейные
+    пространства $U_v$ заменяются на аффинные, а требование $U_v\cap
+    U_w\ne\{0\}$ заменяется на $U_v\cap U_w\ne\varnothing$.
+\end{frame}
+
+\begin{frame}{Связь между размерностями}
+    \begin{statement}
+        \begin{itemize}
+            \item Для произвольного поля имеем $\mathrm{adim}_{\mathbb
+                F}(G)\le\mathrm{pdim}_{\mathbb F}(G)^2$.
+            \item Над полем $\R$ имеем $\mathrm{adim}_{\mathbb R}(G)\le
+                \mathrm{pdim}_{\mathbb R}(G)-1$.
+        \end{itemize}
+    \end{statement}
+    Известные оценки в обратную сторону намного слабее.
+    \pause\vspace{5pt}
+
+    Пусть $\{U_v\}$, $U_v\subset\mathbb{F}^d$~--- проективная реализация.
+    Построим аффинную реализацию в пространстве матриц $\mathbb{F}^{d\times d}$.
+    \pause\vspace{5pt}
+    
+    Полагаем
+    $$
+    W_v := \{A\in\mathbb{F}^{d\times d}\colon \mbox{строки $A$ лежат в $U_v$ и
+    $\mathrm{tr}(A)=1$}\}.
+    $$
+    \pause\vspace{5pt}
+
+    Если $x\in U_{v_1}\cap U_{v_2}$, то можно взять матрицу с одной строкой,
+    пропорциональной $x$, и остальными нулевыми. Если $A\in W_{v_1}\cap
+    W_{v_2}$, то в $A$ найдётся ненулевая строка, она принадлежит $U_{v_1}$ и
+    $U_{v_2}$.
+    \pause\vspace{5pt}
+
+    \textcolor{blue}{Как получить из проективной реализации
+    аффинную?}\pause~Нужно пересечь всё с гиперплоскостью общего положения.
+
+\end{frame}
+
+\begin{frame}
+    \begin{theorem}[Pudl\'ak, R\"odl, 1992]
+        Если булева функция $f$ от $2n$ переменных вычислима программой с
+        ветвлением размера $S$, то $\mathrm{pdim}_{\mathbb F}(G_f)\le S+2$.
+    \end{theorem}
+    \pause
+    Прогаммы с ветвлением (рисуем картинку!) по силе между булевыми
+    формулами и булевыми схемами.
+    \pause\vspace{5pt}
+
+    \begin{theorem}[Разборов, 1990]
+        Для любого двудольного графа имеем 
+        $L_{\mathcal B}(G)\ge \mathrm{adim}_{\mathbb F}(G)$.
+    \end{theorem}
+    \pause\vspace{5pt}
+
+    Используя оценку Warren-а (см. лекцию 2), можно показать, что существуют
+    графы с $\mathrm{pdim}_{\mathbb R}(G)\ge c\sqrt{n/\log n}$.
+
+\end{frame}
+
+\begin{frame}{Связь сложность графа и аппроксимативного ранга}
+    В ряде случаев можно показать, что матрица инцидентности двудольного графа
+    малой сложности имеет низкий аппроксимативный ранг. Рассмотрим пример.
+    \pause
+
+    \begin{statement}
+        Предположим, двудольный $N\times N$ граф $G$ имеет вид
+        $$
+        G = \bigcup_{i=1}^n A_i\times B_i,\quad A_i\subset X,\;B_i\subset Y.
+        $$
+        Тогда для любого $\eps\in(0,1/2)$ найдётся матрица $M\in\R^{N\times N}$, такая что
+        \begin{itemize}
+            \item для всех $(x,y)\in X\times Y$ имеем $|G(x,y)-M(x,y)|\le\eps$,
+            \item $\rank M\le \exp(C\sqrt{n}\log(2/\eps)\log n)$.
+        \end{itemize}
+    \end{statement}
+    \pause\vspace{5pt}
+
+    Мы отождествляем граф $G$ с его матрицей. Пусть $G_i=A_i\times B_i$.
+    Ясно, что $G=G_1\cup G_2\cup\ldots\cup G_n$ и $\rank G_i=1$. Для получения
+    из $G$ матрицы $M$ нужно аппроксимировать функцию $y_1\vee y_2\vee\ldots\vee
+    y_n$.
+\end{frame}
+\begin{frame}{Аппроксимация дизъюнкции}
+    Для $x\in \{0,1\}^n$ обозначим через $\mathrm{OR}(x)$ функцию $x_1\vee
+    x_2\vee\ldots\vee x_n$.
+    \begin{statement}[в качестве упражнения]
+        Для любого $\eps\in(0,1/2)$ найдётся вещественный многочлен $p$ от $n$
+        булевых переменных степени не выше $C n^{1/2}\log(2/\eps)$, такой что
+        для всех $x\in\{0,1\}^n$, $|p(x)-\mathrm{OR}(x)|\le \eps$.
+    \end{statement}
+
+    Аппроксимация булевых функций многочленами~--- отдельная важная
+    тема. Для $f\colon\{0,1\}^n$ через $\deg_\eps(f)$ обозначим минимальную
+    степень полинома $p(x_1,\ldots,x_n)$, аппроксимирующего $f$ с точностью
+    $\eps$: $\|p-f\|_\infty\le \eps$.
+    \pause
+
+    Определение $\deg_\eps(f)$ вполне аналогично определению $\eps$-ранга
+    матрицы. Более того, есть и прямая связь. Скажем, если $f$~--- булева
+    функция от $2n$ переменных, $d=\deg_\eps(f)$, то матрица $M(x,y)=f(x,y)$,
+    $x,y\in\{0,1\}^n$, приближается матрицей $p(x,y)$, $\deg p\le d$. Отсюда
+    $$
+    \rank_\eps(M) \le \sum_{k=0}^d\binom{2n}{k}.
+    $$
+\end{frame}
+
+\begin{frame}
+    Вернёмся к доказательству утверждения про $G=\cup A_i\times B_i$. Имеем
+    $G=\cup G_i$, или $f_G=f_{G_1}\vee f_{G_2}\vee\ldots\vee f_{G_n}$ в терминах
+    функций.
+    \pause\vspace{5pt}
+
+    Пусть полином $p$ аппроксимирует $\mathrm{OR}(y_1,\ldots,y_n)$ с
+    погрешностью $\eps$, $\deg p\ll n^{1/2}\log(2/\eps)$.
+    \pause\vspace{5pt}
+
+    Подставим в $p$ вместо $y_i$ матрицу $G_i$, заменяя произведение на
+    поэлементное умножение, т.е. $y_iy_j$ заменяется на $G_i\circ G_j$. Если
+    матрицы $A$ и $B$ имеют ранг $1$, то и $\rank(A\circ B)=1$. Следовательно,
+    вместо монома $y_{i_1}\cdots y_{i_s}$ возникнет матрица $G_{i_1}\circ\cdots\circ
+    G_{i_s}$ ранга 1.
+    \pause\vspace{5pt}
+
+    Положим $M=p(G_1,\ldots,G_n)$. Из вышесказанного следует, что
+    $\|M-G\|_\infty\le\eps$ и
+    $$
+    \rank M \le \sum_{j=0}^{\deg p} \binom{n}{j} \le (en/\deg p)^{\deg p}.
+    $$
+\end{frame}
+
+
+\begin{frame}
+    \begin{thebibliography}{XXXX}
+        \bibitem{PR} P.~Pudl\'ak, V.~R\"odl, ``A combinatorial approach to
+            complexity'', \textit{Combinatorica}, 1992.
+    \end{thebibliography}
+\end{frame}
+
+
+\end{document}

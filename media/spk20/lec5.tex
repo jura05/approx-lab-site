@@ -1,0 +1,622 @@
+\documentclass[handout]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usetheme{Boadilla}
+
+\colorlet{beamer@blendedblue}{green!40!black}
+
+\setbeamertemplate{navigation symbols}{}
+\title{Спецкурс 2020/2021: ``Геометрические и комбинаторные свойства матриц и
+аппроксимация'' \\ Блок лекций ``Сложность матриц и аппроксимация'' \\ Лекция 5:
+``Реализация матриц с большим отступом (margin)''}
+\renewcommand\le{\leqslant}
+\renewcommand\ge{\geqslant}
+
+\newcommand\R{\mathbb R}
+\newcommand\N{\mathbb N}
+\newcommand\Z{\mathbb Z}
+\newcommand\T{\mathbb T}
+\newcommand\CC{\mathbb C}
+\newcommand\eps{\varepsilon}
+
+
+\newcommand{\tvec}{\mathbf{t}}
+
+\newcommand\E{\mathsf E}
+\renewcommand\P{\mathsf P}
+
+%\newtheorem*{theorem}{Теорема}
+%\newtheorem{lemma}{Лемма}
+\newtheorem*{statement}{Утверждение}
+%\newtheorem*{conjecture}{Гипотеза}
+%\newtheorem*{remark}{Замечание}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Rig}{Rig}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\disc}{disc}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Arg}{Arg}
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\margin}{margin}
+\DeclareMathOperator{\mc}{mc}
+
+\begin{document}
+\maketitle
+
+
+\begin{frame}{Определение}
+
+    Пусть $S\in\{-1,1\}^{m\times n}$~--- сигнум-матрица.
+    \pause
+
+    Определим ``максимальный отступ'' матрицы:
+    $$
+    \margin(S) := \max_{\{x_i\},\{y_j\}}\; \min_{i,j} \frac{|\langle x_i,y_j\rangle|}{|x_i|\cdot|y_j|},
+    $$
+    где максимум берётся по всем \textit{реализациям} матрицы, т.е. таким
+    наборам векторов $x_1,\ldots,x_m$, $y_1,\ldots,y_n$, что
+    $S_{i,j}=\sign\langle x_i,y_j\rangle\quad\forall i,j$.
+    \pause
+
+    Смысл в том, что равенство $S_{i,j}=\sign \langle x_i,y_j\rangle$ должно
+    выполняться с большим ``запасом''.
+    \pause\vspace{5pt}
+
+    Margin~--- отступ, зазор.
+    \pause\vspace{5pt}
+
+    Определим сложность реализации с отступом (\textit{margin complexity})
+    сигнум матрицы $S$ как
+    $$
+    \mc(S) := \margin^{-1}(S).
+    $$
+    \pause
+    (Чем сложнее реализовать матрицу, тем больше сложность.)
+\end{frame}
+
+\begin{frame}{Базовые свойства}
+    \textcolor{blue}{Оцените $\mc(S)$:}\pause
+    \begin{itemize}
+        \item ``Диагональная'' матрица $n\times n$: $S_{i,i}=1$, $S_{i,j}=-1$ при
+            $i\ne j$.\pause
+        \item $S_{i,i}=-1$, $S_{i,j}=1$ при $i\ne j$.\pause
+        \item $S_{1,1}=1$, $S_{i,j}=-1$ при остальных $i,j$.\pause
+    \end{itemize}
+
+    \begin{statement}
+        Для любой матрицы $S\in\{-1,1\}^{m\times n}$ имеем
+        $$
+        1 \le \mc(S) \le \min\{\sqrt{m},\sqrt{n}\}.
+        $$
+    \end{statement}
+    \pause
+    \textcolor{blue}{Докажите оценку снизу.}\pause~$\margin(S)\le 1$, т.к.
+    $|\langle x_i,y_j\rangle|\le|x_i||y_j|$.
+    \pause\vspace{5pt}
+    
+    \textcolor{blue}{Докажите оценку сверху.}\pause~Пусть $m\le n$. Возьмём в
+    качестве $\{y_j\}_{j=1}^n$ столбцы матрицы $S$, в качестве
+    $\{x_i\}_{i=1}^n$~--- базисные вектора. Тогда $|x_i|\cdot|y_j|\le m^{1/2}$ и
+    $\langle x_i,y_j\rangle = S_{i,j}$.
+
+\end{frame}
+
+
+\begin{frame}{Классификация с максимальным отступом}
+    Пусть $(x_1,t_1),\ldots,(x_n,t_n)$~--- выборка из некоторого множества
+    объектов. Каждый объект принадлежит одному из двух классов: $t_i=1$ или
+    $t_i=-1$. Вектор $x_i\in\R^d$ состоит из $d$ чисел (признаков), описывающих $i$-й
+    объект.
+    \pause\vspace{5pt}
+
+    Задача классификации состоит в построении функции $\hat{f}\colon\R^d\to\{-1,1\}$,
+    позволяющей отличать объекты разных классов. То есть, ошибка
+    $\mathrm{Err}=\P(t\ne\hat{f}(x))$ должна быть мала.
+    \pause\vspace{5pt}
+
+    В линейной классификации функция $\hat f$ строится с помощью линейной: $\hat
+    f(x)=\sign\langle b,x\rangle$, $b\in\R^d$. (Случай аффинной функции $b_0+\langle b,x\rangle$ можно свести
+    к линейному, добавим признак, тождественно равный $1$.)
+    \pause\vspace{5pt}
+    
+    Пространство $\R^d$ гиперплоскостью $\langle b,x\rangle=0$ разделяется на два
+    полупространства: $\langle b,x\rangle>0$, классифицируется как $t=1$, и
+    $\langle b,x\rangle<0$ (соответственно, $t=-1$).
+\end{frame}
+
+\begin{frame}{Классификация с максимальным отступом}
+    Разделяющая гиперплоскость $\langle b,x\rangle=0$, строится по обучающей выборке
+    $(x_1,t_1),\ldots,(x_n,t_n)$.
+    \pause\vspace{5pt}
+
+    Предположим, мы можем получить на обучении нулевую ошибку: существует
+    ненулевой вектор $b$, такой что
+    $$
+    t_i = \sign \langle b,x_i\rangle,\quad i=1,\ldots,n.
+    $$
+    Какой $b$ взять, чтобы ошибка на тестовой выборке была поменьше?
+    \pause\vspace{5pt}
+
+    Потребуем, чтобы $b$ обеспечивал правильную классификацию с максимальным
+    запасом, \textit{отступом}:
+    $$
+    \begin{cases}
+        \min\limits_i |\langle b,x_i\rangle| \to \max,\\
+        t_i=\sign \langle b,x_i\rangle,\quad i=1,\ldots,n,\\
+        |b|=1.
+    \end{cases}
+    $$
+    \pause
+    Эквивалентная формулировка: мы проводим разделяющую гиперплоскость так,
+    чтобы максимизировать расстояние от точек до края.
+\end{frame}
+
+\begin{frame}{Опорные вектора}
+    Можно показать, что $b$ является линейной комбинацией \textit{опорных
+    векторов} $x_i$, для которых $|\langle b,x_i\rangle|$ минимально.
+    \pause
+
+    Отсюда название \textit{Метод Опорных Векторов}, Support Vector Machine
+    (SVM). \pause~На практике в SVM используется так называемый \textit{soft margin}, когда
+    мы не требуем, чтобы гиперплоскоть правильно разделяла обучающую выборку;
+    разрешаем ``залезать за край'', но ``штрафуем'' за это:
+    \pause
+    $$
+    \begin{cases}
+    |b|^2 + C\sum_{i=1}^n\xi_i \to \min,\\
+    t_i \langle b,x_i\rangle \ge 1-\xi_i,\quad i=1,\ldots,n\\
+    \xi_i \ge 0,\quad i=1,\ldots,n.
+    \end{cases}
+    $$
+
+\end{frame}
+
+\begin{frame}{Классификация с максимальным отступом}
+    
+    Вернёмся к классификации с максимальным отступом. Пусть $\mathcal
+    O=\{O_1,\ldots,O_n\}$~--- множество объектов\pause, $\Phi\colon\mathcal O\to\R^d$~---
+    отображение в пространство признаков (feature map), $x_i=\Phi(O_i)$.\pause~Класс объекта задаётся
+    (неизвестной нам) функцией $f\colon\mathcal O\to\{-1,1\}$: $t_i=f(O_i)$.
+    \pause
+    
+    Обозначим через $\margin_\Phi(f)$ величину максимального отступа:
+    $$
+    \begin{cases}
+        \min\limits_i |\langle b,x_i\rangle| \to \max,\\
+        t_i=\sign \langle b,x_i\rangle,\quad i=1,\ldots,n,\;|b|=1.\\
+    \end{cases}
+    $$
+    \pause
+    %\pause(Чем меньше $\margin(f)$, тем сложнее задача классификации.)
+    %\pause\vspace{5pt}
+
+    Теперь предположим, есть целый класс возможных функций: $\mathcal
+    F=\{f_1,\ldots,f_m\}$.\pause~Минимальный отступ
+    $$
+    \margin_\Phi(\mathcal F)=\min(\margin_\Phi(f_1),\ldots,\margin_\Phi(f_m))
+    $$
+    характеризует сложность задачи классификации произвольной функции из
+    $\mathcal F$.
+\end{frame}
+
+\begin{frame}{Классификация с максимальным отступом}
+    Если теперь минимизировать $\margin_\Phi(\mathcal F)$ по всевозможным
+    отображениям $\Phi\colon\mathcal O\to S^{d-1}$ (нормируем признаки):
+    \pause
+    $$
+    \begin{cases}
+        \min_{i,j} |\langle b^j,x_i\rangle| \to \max,\\
+        t_i^j = \sign \langle b^j,x_i\rangle,\quad i=1,\ldots,n,\;j=1,\ldots,m,\\
+        |b^j|=1,|x_i|=1,
+    \end{cases}
+    $$
+    \pause
+    мы, получим в точности величину $\margin(S)$ сигнум-матрицы
+    $S=\{f_j(O_i)\}_{\substack{i=1,\ldots,n\\j=1,\ldots,m}}$.
+
+\end{frame}
+
+
+
+\begin{frame}{Таблица различных мер сложности}
+    Напомним определения:
+    $$
+    \margin(S) := \max\{ \min_{i,j} \frac{|\langle
+    x_i,y_j\rangle|}{|x_i|\cdot|y_j|}\colon \sign \langle x_i,y_j\rangle =
+    S_{i,j}\},
+    $$
+    \pause
+    $$
+    \mc(S) := \margin^{-1}(S).
+    $$
+    \pause
+
+    \begin{tabular}{|l|l|l|}
+        \hline
+                             & \textbf{равенство}   & \textbf{знак} \\
+        \hline
+        \textbf{размерность} & $\rank$              & $\rank_\pm$ \\
+        \hline
+        \textbf{длина}       & $\gamma_2$           & $\mc$ \\
+        \hline
+    \end{tabular}
+    \pause\vspace{5pt}
+
+    Величина $\log\rank_\pm$ эквивалентна коммуникационной сложности в
+    вероятностной модели с неограниченной ошибкой.
+    \pause\vspace{5pt}
+
+    Величина $\gamma_2$ возникла в функциональном анализе (факторизация
+    операторов через гильбертовы пространства).
+
+\end{frame}
+
+\begin{frame}
+
+    \begin{theorem}[Forster, 2002]
+        Для $S\in\{-1,1\}^{m\times n}$ имеет место неравенство
+        $$
+        \mc(S) \ge \frac{\sqrt{mn}}{\|S\|_{2\to2}}.
+        $$
+    \end{theorem}
+    \pause\vspace{5pt}
+
+    Пусть $\{x_i\}$, $\{y_j\}$~--- реализация $S$ с помощью единичных векторов. Рассмотрим величину
+    $$
+    D := \sum_{j=1}^n (\sum_{i=1}^m |\langle x_i,y_j\rangle|)^2.
+    $$
+    \pause
+    Ранее было доказано (лекция \textnumero 2), что $D\le m\|S\|_{2\to2}^2$.
+    \pause
+
+    С другой стороны, если это реализация с максимальным отступом, то $|\langle
+    x_i,y_j\rangle|\ge \margin(S)$, поэтому $D \ge
+    nm^2\margin^2(S)$.\pause~Отсюда
+    $$
+    nm^2\margin^2(S) \le m\|S\|_{2\to2}^2,\quad\mbox{ч.т.д.}
+    $$
+
+\end{frame}
+\begin{frame}
+    Пусть $H$~--- матрица Адамара, т.е. $n\times n$ сигнум-матрица с
+    ортогональными строками.\pause~\textcolor{blue}{Чему равно
+    $\mc(H)$?}\pause~Воспользуемся теоремой Форстера.\pause~Оценка снизу:
+    $n^{1/2}$, сверху тоже $n^{1/2}$, следовательно, $\mc(H)=n^{1/2}$.
+
+
+\end{frame}
+
+\begin{frame}{Связь $\gamma_2$ и $\mc$}
+
+    \begin{statement}
+        $$
+        \mc(S) = \min\{\gamma_2(A)\colon A_{i,j}S_{i,j}\ge 1\;\forall i,j\}.
+        $$
+    \end{statement}
+    \pause
+
+    Доказательство. Пусть есть реализация $S_{i,j}=\sign\langle x_i,y_j\rangle$ с
+    векторами $|x_i|=1$, $|y_j|=1$ и максимальным отступом $\margin(S) = \min|\langle
+    x_i,y_j\rangle|$.\pause~Матрица $A_1 = (\langle x_i,y_j\rangle)$ имеет
+    $\gamma_2(A_1)\le 1$.\pause~Матрица $A = A_1/\margin(S)$ имеет $\gamma_2(A) \le
+    \mc(S)$,\pause~при этом
+    $$
+    A_{i,j}S_{i,j} = \frac1{\margin(S)}\langle x_i,y_j\rangle \sign\langle x_i,y_j\rangle
+    \ge 1.
+    $$
+    Мы доказали оценку $\min\gamma_2(A) \le \mc(S)$.\pause
+    
+    Обратно, пусть $A_{i,j}S_{i,j}\ge 1$.\pause~Запишем $A_{i,j}=\langle
+    x_i,y_j\rangle$ и $|x_i|\cdot|y_j|\le \gamma_2(A)$.\pause~Тогда $\sign\langle
+    x_i,y_j\rangle = S_{i,j}$ и
+    $$
+    \min\frac{|\langle x_i,y_j\rangle|}{|x_i|\cdot|y_j|} \ge
+    \frac{|A_{i,j}|}{\gamma_2(A)} \ge \gamma_2^{-1}(A).
+    $$
+    \pause
+    Следовательно, $\margin(S)\ge\gamma_2^{-1}(A)$, т.е. $\mc(S)\le\gamma_2(A)$.
+\end{frame}
+\begin{frame}
+    \begin{statement}
+        $\mc(S)\ge mn/\gamma_2^*(S)$.
+    \end{statement}
+    \pause\vspace{5pt}
+
+    Пусть $\mc(S)=\gamma_2(A)$, $A_{i,j}S_{i,j}\ge 1$.\pause
+    
+    Нормируем
+    $A'=A/\gamma_2(A)$, тогда
+    $$
+    \gamma_2^*(S) \ge \langle S,A'\rangle = \sum S_{i,j}A'_{i,j} \ge
+    \gamma_2(A)^{-1} = \mc(S)^{-1}.
+    $$
+    Ч.т.д.
+    \pause\vspace{5pt}
+    Оказывается, эта оценка усиливает теорему Форстера
+    ($\mc(S)\ge\sqrt{mn}/\|S\|_{2\to2}$), поскольку
+    $\gamma_2^*(S)\le\sqrt{mn}\|S\|_{2\to2}$ (\textbf{Упражнение}).
+\end{frame}
+\begin{frame}
+
+    Мы доказали, что величины $\mc$, $\gamma_2$ и $\rank$ связаны следующим
+    образом:
+    $$
+    \mc(S) \le \gamma_2(S) \le \sqrt{\rank(S)}.
+    $$
+    Для матриц Адамара достигается равенство.
+    \pause\vspace{5pt}
+
+    Установим связь между $\mc$ и $\rank_\pm$.
+    \pause
+    \begin{statement}
+        $$
+        \rank_\pm(S) \le C\mc(S)^2\log(m+n),
+        $$
+        где $C$~--- абсолютная постоянная.
+    \end{statement}
+
+\end{frame}
+
+\begin{frame}{Johnson--Lindenstrauss}
+    Нам потребуется лемма Johnson--Lindenstrauss.\pause
+    \begin{statement}
+        Пусть $R$~--- матрица $d\times N$ со стандартными гауссовыми элементами,
+        т.е. $R_{i,j}\sim\mathcal N(0,1)$. Тогда для любых векторов $x,y\in\R^N$,
+        $|x|,|y|\le 1$ и $\eps\in(0,1/2)$ имеем
+        $$
+        \P(|\langle \frac1{\sqrt{d}}Rx,\frac1{\sqrt{d}}Ry\rangle - \langle
+        x,y\rangle|\ge \eps)\le 2\exp(-d\eps^2/8).
+        $$
+    \end{statement}
+    \pause
+    Отметим, что от размерности $N$ ничего не зависит.
+    \pause
+
+    Следствие (Johnson--Lindenstrauss): $M$ точек в единичном шаре можно
+    (линейно) отобразить в
+    пространство размерности $d \asymp \log(M)\eps^{-2}$, изменив попарные
+    расстояние не более чем на $\eps$.\pause~Действительно, нам требуется
+    сохранить $M^2$ скалярных произведений; если  $2M^2\exp(-d\eps^2/8)<1$, то
+    случайная матрица делает это с положительной вероятностью.
+\end{frame}
+
+\begin{frame}
+    Докажем теперь оценку $\rank_\pm(S)\ll\mc(S)^2\log(m+n)$.
+    \pause\vspace{5pt}
+
+    Возьмём реализацию $S_{i,j}=\sign\langle x_i,y_j\rangle$ с $|x_i|=|y_j|=1$ и
+    максимальным отступом $\margin(S)=\min|\langle x_i,y_j\rangle|$.\pause~
+    Применим лемму Johnson--Lindenstrauss:
+    \pause
+    $$
+    \P(|\langle x'_i,y'_j\rangle - \langle x_i,y_j\rangle|\ge\eps) \le
+    2\exp(-d\eps^2/8).
+    \eqno{(*)}
+    $$
+    \pause
+    Если $2mn\exp(-d\eps^2/8)<1$, то найдутся вектора $\{x_i'\}, \{y_i'\}$ в
+    $d$-мерном пространстве, такие что (*) выполнено для всех $i=1,\ldots,m$,
+    $j=1,\ldots,n$.
+    \pause
+
+    При этом, если $\eps<\margin(S)$, например,
+    $\eps=\frac12\margin(S)$, то знак $\langle x_i,y_j\rangle$ не
+    поменяется: $\sign\langle x'_i,y'_j\rangle = S_{i,j}$. Тогда
+    $\rank_\pm(S)\le d$.
+    \pause
+    Условие на $d$:
+    $$
+    d>8\eps^{-2}\ln(2mn)\asymp\mc(S)^2\log(2mn).
+    $$
+
+\end{frame}
+
+
+\begin{frame}{Дискрепанс}
+
+    Напомним понятие дискрепанса матрицы $S\in\{-1,1\}^{m\times n}$.
+    \pause\vspace{5pt}
+
+    Пусть $\mu$~--- мера на множестве индексов
+    $[m]\times[n]$.\pause~
+    Для $R\subset[m]\times[n]$ обозначим через $R_+$ множество индексов $(i,j)\in R$ в
+    которых $S_{i,j}=1$, и $R_-$ соответственно.\pause~Тогда
+    $$
+    \disc_\mu(S) := \max_R|\mu(R_+)-\mu(R_-)|,
+    $$
+    где максимум берётся по всевозможным комбинаторным прямоугольникам
+    $R=R'\times R''\subset [m]\times [n]$.
+    \pause
+    Положим также $\disc(S) := \min_\mu\disc_\mu(S)$, минимум берётся по всем
+    \textit{вероятностным} распределениям $\mu$.
+    \pause
+
+    В лекции \textnumero 1 мы установили неравенство $C(f)\ge\log_2(1/\disc(f))$ для коммуникационной сложности в
+    детерминированной модели\pause~($\chi\le 2^C$, $\disc\ge 1/\chi$).
+\end{frame}
+
+\begin{frame}{Дискрепанс и CUT-норма}
+
+    В случае равномерной меры $u$ величина $\disc_u(S)$ выражается следующим
+    образом:
+    $$
+    mn\disc_u(S) = \max_{R',R''}|\sum_{i\in R',j\in R''}S_{i,j}|.
+    $$
+    \pause
+
+    Величина в правой части равенства называется также CUT-нормой:
+    $\|S\|_{\mathrm{CUT}}$. CUT~--- т.к. мы ``вырезаем'' из матрицы
+    прямоугольник и суммируем элементы. Можно считать её дискрепансом по
+    отношению к считающей мере $\mu_{i,j}\equiv1$. Кроме того, CUT-норма
+    определена для всех вещественных матриц (и является нормой).
+
+\end{frame}
+\begin{frame}{Комбинаторный дискрепанс}
+    Ранее нам уже встречался дискрепанс матрицы $M$ вида
+    $\disc_{old}(M) = \min_{x\in\{-1,1\}^n}\|Mx\|_\infty$. В чём связь между этими понятиями?
+    \pause
+
+    $\disc_u(S)$ и $\disc_{old}(M)$ происходят из общего понятия~---
+    \textit{комбинаторного дискрепанса}.\pause
+    
+    Пусть $\Omega$~--- множество и
+    $\mathcal A$~--- некоторое семейство его
+    подмножеств.\pause~Задача: раскрасить $\Omega$ в два цвета так, чтобы в
+    каждом $A\in\mathcal A$ было примерно поровну точек обоих
+    цветов.\pause~Раскраска $\chi\colon\Omega\to\{-1,1\}$ имеет дискрепанс
+    $$
+    \disc(\chi,\mathcal A) = \max_{A\in\mathcal A}|\sum_{x\in A}\chi(x)|.
+    $$
+    \pause
+    Дискрепанс семейства $\mathcal A$ определяется как
+    $\min_\chi\disc(\chi,\mathcal A)$.
+    \pause\vspace{5pt}
+
+    $\disc_u(S)$ это дискрепанс для множества $\Omega = [m]\times[n]$,
+    семейства $\mathcal R=\{R'\times R''\}$ комбинаторных прямоугольников и
+    $\chi=S$.
+    \pause\vspace{5pt}
+
+    $\disc_{old}(S)$ это дискрепанс  семейства множеств
+    $A_i\subset \Omega = [n]$, задаваемых строками $S_i$ (т.е. $j\in A_i$, если $S_{i,j}=1$).
+\end{frame}
+
+\begin{frame}{Дискрепанс и $\mc$}
+    \begin{theorem}[Linial, Shraibman, 2008]
+        $$
+        \frac18\margin(S) \le \disc(S) \le 8\margin(S).
+        $$
+    \end{theorem}
+    \pause
+
+    Доказательство.\pause
+    
+    \textbf{1 шаг}. Заменим в определении $\margin$ произвольные
+    вектора $\{x_i\},\{y_j\}\in\R^N$ на знаковые
+    $\{x_i\},\{y_j\}\in\{-1,1\}^N$. Получится величина
+    $\margin_\pm(S)\le\margin(S)$.
+    \pause\vspace{5pt}
+
+    Мы докажем (используя неравенство Гротендика), что эти величины эквивалентны:
+    $$\margin_\pm(S) \le \margin(S) \le K_G\margin_\pm(S).$$
+    \pause
+
+    Левое неравенство очевидно (строже требования к $x_i,y_j$, меньше отступ).
+
+\end{frame}
+\begin{frame}{Доказательство $\disc\asymp\margin$ (продолжение)}
+
+    Рассмотрим матрицу $B=(\frac{\langle x_i, y_j\rangle}{|x_i||y_j|})$, где
+    $x_i,y_j\in\{-1,1\}^N$. Имеем $B_{i,j} = N^{-1}\sum_{p=1}^N x_{i,p}y_{j,p}$.
+    Тем самым, $B$ есть выпуклая комбинация 
+    одноранговых сигнум матриц $B_p=(x_{i,p}y_{j,p})_{i,j}$.
+    \pause
+
+    Обочначим через $M_\pm$ выпуклую оболочку всех одноранговых $m\times n$
+    сигнум-матриц.\pause~Тогда $B\in M_\pm$. Обратно, любую матрицу из выпуклой
+    оболочки можно приблизить такой матрицей $B$ (с коэффициентами $1/N$).
+    \pause
+
+    Следовательно,
+    $$
+    \margin_\pm(S) = \max_{B\in M_\pm} \min_{i,j}S_{i,j}B_{i,j}.
+    $$
+    \pause
+
+    По определению,
+    $$
+    \margin(S) = \max_{\gamma_2(A)\le 1} \min S_{i,j}A_{i,j}.
+    $$
+    \pause
+
+    Из неравенства Гротендика мы вывели, что $\gamma_2^*(A)\le K_G\|A\|_{\infty\to1}$. Следовательно,
+    для сопряжённой нормы $\gamma_2(A)\ge K_G^{-1}\|A\|_\nu$. Нетрудно
+    проверить, что $M_\pm$ это шар в норме $\|A\|_\nu$, сопряженной к
+    $\|A\|_{\infty\to1}$. Отсюда следует нужное нам неравенство.
+
+\end{frame}
+\begin{frame}{Доказательство $\disc\asymp\margin$ (продолжение)}
+
+    \textbf{2 шаг}. Докажем, что $\disc_\mu(S) \le \|S\circ\mu\|_{\infty\to 1}
+    \le 4\disc_\mu(S)$.
+    \pause
+
+    Здесь $(S\circ\mu)_{i,j} = S_{i,j}\mu_{i,j}$. Ясно, что неравенство сводится
+    к матрице $T=(S\circ\mu)$.\pause
+    
+    Имеем
+    $\disc_\mu(S)=\|T\|_{\mathrm{CUT}}$, нужно доказать:
+    $$
+    \|T\|_{\mathrm{CUT}} \le \|T\|_{\infty\to 1} \le 4\|T\|_{\mathrm{CUT}}.
+    $$
+
+    Левое неравенство: $\sum_{i\in R',j\in R''}T_{i,j} = \langle
+    T\mathbf{1}_{R''},\mathbf{1}_{R'}\rangle \le \|T\|_{\infty\to 1}$.
+    \pause
+    Правое неравенство: для любых $x_i,y_j\in\{-1,1\}$ имеем
+    $$
+    \sum t_{i,j}x_iy_j =
+    \sum_{\substack{x_i=1\\y_j=1}} t_{i,j} - 
+    \sum_{\substack{x_i=1\\y_j=-1}} t_{i,j} - 
+    \sum_{\substack{x_i=-1\\y_j=1}} t_{i,j} + 
+    \sum_{\substack{x_i=-1\\y_j=-1}} t_{i,j}.
+    $$
+    Ясно, что эта величина не превосходит $4\|T\|_{\mathrm{CUT}}$.
+
+\end{frame}
+\begin{frame}{Доказательство $\disc\asymp\margin$ (продолжение)}
+    Итак, $\disc_\mu(S) \le \|S\circ\mu\|_{\infty\to 1}
+    \le 4\disc_\mu(S)$, следовательно,\pause
+    $$
+    \disc(S) \le \inf_\mu \|S\circ\mu\|_{\infty\to 1} \le 4\disc(S).
+    $$
+    \pause
+
+    \textbf{3 шаг}. Остаётся доказать, что
+    $$
+    \margin_\pm(S) = \inf_\mu \|S\circ\mu\|_{\infty\to 1}.
+    $$
+    \pause
+    Мы выяснили, что $\margin_\pm(S) = \max_{B\in M_\pm}
+    \min_{i,j}S_{i,j}B_{i,j}$. Множество $M_\pm$ это многогранник, вершины
+    которого -- одноранговые сингум-матрицы. Будем обозначать такие матрицы как
+    $X^q$, $q\in Q$. Таким образом, $B=\sum_{q\in Q} \lambda_q X^q$, где $\sum
+    \lambda_q=1$,
+    $\lambda_q\ge 0$.
+    \pause\vspace{5pt}
+
+    Обозначим $\delta:=\min_{i,j}S_{i,j}B_{i,j}$. Нам нужно максимизировать
+    $\delta$ при условии $S_{i,j} \sum_q \lambda_q X^q_{i,j} \ge \delta$.
+\end{frame}
+
+\begin{frame}{Доказательство $\disc\asymp\margin$ (окончание)}
+    Мы приходим к задаче линейного программирования:
+    $$
+    \begin{cases}
+        \delta\to\max,\\
+        \sum_q\ \lambda_q (X^q\circ S)_{i,j} \ge \delta,\\
+        \sum_q \lambda_q = 1,\;\lambda_q \ge 0.
+    \end{cases}
+    $$
+    \pause
+    \textbf{Упражнение:} найдите двойственную задачу и докажите, что её значение
+    равно $\|S\|_{\infty\to 1}$.
+\end{frame}
+
+
+\begin{frame}
+    \begin{thebibliography}{XXXX}
+        \bibitem{1} N.~Linial, S.~Mendelson, G.~Schechtman,
+            A.~Shraibman, ``COMPLEXITY MEASURES OF SIGN MATRICES'' (2007).
+
+        \bibitem{2} S.V.~Lokam, ``Complexity Lower Bounds using Linear
+            Algebra'' (2009).
+    \end{thebibliography}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,611 @@
+\documentclass[handout]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usetheme{Boadilla}
+
+\colorlet{beamer@blendedblue}{green!40!black}
+
+\setbeamertemplate{navigation symbols}{}
+\title{Спецкурс 2020/2021: ``Геометрические и комбинаторные свойства матриц и
+аппроксимация'' \\ Блок лекций ``Сложность матриц и аппроксимация'' \\ Лекция 4:
+``Факторизационная $\gamma_2$-норма''}
+\renewcommand\le{\leqslant}
+\renewcommand\ge{\geqslant}
+
+\newcommand\R{\mathbb R}
+\newcommand\N{\mathbb N}
+\newcommand\Z{\mathbb Z}
+\newcommand\T{\mathbb T}
+\newcommand\CC{\mathbb C}
+\newcommand\eps{\varepsilon}
+
+
+\newcommand{\tvec}{\mathbf{t}}
+
+\newcommand\E{\mathsf E}
+\renewcommand\P{\mathsf P}
+
+%\newtheorem*{theorem}{Теорема}
+%\newtheorem{lemma}{Лемма}
+\newtheorem*{statement}{Statement}
+%\newtheorem*{conjecture}{Гипотеза}
+%\newtheorem*{remark}{Замечание}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Rig}{Rig}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Arg}{Arg}
+\DeclareMathOperator{\Real}{Re}
+
+\begin{document}
+\maketitle
+
+
+\begin{frame}{Определение $\gamma_2$}
+
+    Пусть $M\in\R^{m\times n}$.
+    Через $\gamma_2(M)$ обозначим точную нижнюю грань $c>0$, таких что $M$
+представляется в виде $M=AB$, причём для любой строки $a_i$ матрицы
+$A$ и любого столбца $b^j$ матрицы $B$ имеем $|a_i|\cdot|b^j|\le c$.
+    \pause\vspace{5pt}
+
+Другими словами, $\gamma_2(M)\le c$ тогда и только тогда, когда найдутся
+вектора $x_1,\ldots,x_m$ и $y_1,\ldots,y_n$ в некотором
+конечномерном евклидовом пространстве, такие что $M_{i,j}=\langle
+x_i,y_j\rangle$ для всех $i,j$, и $|x_i| \cdot |y_j|
+    \le c$.\pause~(Можно перенормировать так, что
+    $\max|x_i|,|y_j|\le\sqrt{c}$.)
+    \pause\vspace{5pt}
+
+Матрица имеет малый ранг, когда её элементы представимы в виде скалярного
+    произведения \textit{маломерных} векторов: $\rank M\le r\Leftrightarrow
+M_{i,j}=\langle x_i,y_j\rangle,\;x_i,y_j\in\mathbb R^r$; в случае же малой
+$\gamma_2$-нормы элементы представимы в виде скалярного произведения
+    \textit{коротких} векторов. Это говорит о тесной связи ранга и $\gamma_2$-нормы.
+    \pause\vspace{5pt}
+
+Точная нижняя грань в определении $\gamma_2$ достигается. Действительно,
+можно считать, что размерность пространства, в котором лежат $x_i,y_j$, не
+превосходит $m+n$.
+
+\end{frame}
+
+\begin{frame}
+Величина $\gamma_2$ задаёт норму в пространстве матриц
+$\mathrm{Mat}_{m\times n}(\mathbb R)$.
+    \pause~\textcolor{red}{Почему $\gamma_2(M+K)\le\gamma_2(M)+\gamma_2(K)$?}
+    \pause\vspace{5pt}
+
+Данное определение есть частный случай $\gamma_2$-нормы в пространстве
+операторов между банаховыми пространствами $X$ и $Y$. А именно,
+$\gamma_2(u)$ для оператора $u\colon X\to Y$ есть точная нижняя
+грань $c>0$, таких что $u$ представляется в виде $u=AB$, где
+$B\colon X\to H$, $A\colon H\to Y$, $H$ -- некоторое
+гильбертово пространство, $\|A\|\cdot\|B\|\le c$.
+    \pause\vspace{5pt}
+
+Через $\Gamma_2(X,Y)$ обозначается банахово пространство операторов $X\to Y$ с конечной $\gamma_2$-нормой.
+    \pause\vspace{5pt}
+
+    $\gamma_2(M)$ для матрицы равна $\gamma_2$-норме $M$ как оператора из
+    $\Gamma_2(\ell_1^n,\ell_\infty^m)$.
+    Действительно, матричная норма $\|B\|_{1\to2}$ равна
+    \textcolor{red}{чему?}\pause~максимальной длине
+    столбца матрицы $B$,\pause~а норма $\|A\|_{2\to\infty}$ равна максимальной длине
+    строки матрицы $A$ (\textcolor{red}{почему?}).
+\end{frame}
+
+
+\begin{frame}
+
+Из теоремы Джона вытекает следующее неравенство для оператора $u\colon
+X\to Y$ конечного ранга:
+    \begin{statement}
+        Для оператора $u\colon X\to Y$ имеем
+        $$
+    \gamma_2(u)\le \sqrt{\rank u}\cdot \|u\|_{X\to Y}.
+        $$
+    \end{statement}
+    \pause\vspace{5pt}
+
+Действительно, пусть $V=\mathrm{Im}\;u\subset Y$, $\dim V=r:=\rank u$.
+    \pause
+
+    По теореме Джона, для эллипсоида максимального объёма $\mathcal E$,
+    вписанного в шар $B_V=B_Y\cap V$,
+    $$
+    \mathcal E \subset B_V \subset \sqrt{r}\mathcal E.
+    $$
+    \pause\vspace{5pt}
+    Пространство $E$ с шаром $\mathcal E$ евклидово, $E\cong\ell_2^r$.
+    Тождественные операторы $f\colon (V,\|\cdot\|_Y) \to E$ и $g\colon
+    E\to(V,\|\cdot\|_Y)$ взаимно обратны и $\|f\| \le \sqrt{r}$, $\|g\| \le
+    1$.\pause~(Иногда теорему Джона так и формулируют: существует оператор
+    $f\colon Z\to\ell_2^{\dim Z}$ с $\|f\|\cdot\|f^{-1}\|\le\sqrt{\dim Z}$.)
+    \pause\vspace{5pt}
+
+    Тогда $u=g(fu)$,
+    $$
+    \|fu\|\cdot \|g\|\le \|u\|\cdot\|f\|\cdot\|g\|\le \sqrt{r}\|u\|.
+    $$
+
+\end{frame}
+
+\begin{frame}
+    Итак,
+        $$
+    \gamma_2(u)\le \sqrt{\rank u}\cdot \|u\|_{X\to Y}.
+        $$
+
+    Применим это утверждение для обычной $\gamma_2$-нормы матрицы $M$, то есть
+    нормы $\Gamma(\ell_1^n,\ell_\infty^m)$. \textcolor{red}{Чему
+    равно $\|M\|_{1\to\infty}$}?
+    \pause\vspace{5pt}
+
+Следствие.
+    $$
+    \gamma_2(M) \le \sqrt{\rank M}\max\limits_{i,j}|M_{i,j}|.
+    $$
+    \pause\vspace{5pt}
+    \begin{itemize}
+        \item Чему равно $\gamma_2(\mathrm{Id})$ для единичной матрицы?
+            \pause~$\gamma_2(\mathrm{Id})=1$.\pause
+        \item Позже мы докажем, что $\gamma_2(\Delta^N)\asymp\log N$ для
+            верхнетреугольной матрицы из нулей и единиц.
+        \item Для случайных сигнум $N\times N$ матриц $\gamma_2\asymp N^{1/2}$.
+    \end{itemize}
+    \pause\vspace{5pt}
+
+    $\gamma_2$-норма тесно связана с аппроксимативным рангом и \textit{margin
+    complexity} (мерой сложности, основанной на реализации сигнум-матриц с
+    большим отступом).  Об этом -- в следующих лекциях.
+
+\end{frame}
+
+\begin{frame}
+
+Представление $M_{i,j}=\langle x_i,y_j\rangle$, $x_i,y_j\in H$,
+наводит на мысли о неравенстве Гротендика:
+    \pause\vspace{5pt}
+
+    \begin{theorem}[Grothendieck's inequality]
+        Для любой матрицы $M\in\R^{m\times n}$ имеет место неравенство
+        $$
+    \max\limits_{x_i,y_j\in U(H)} \sum_{i,j} M_{i,j}\langle x_i,y_j\rangle
+    \le K_G \max\limits_{|s_i|,|t_j|\le 1}\sum_{i,j}M_{i,j}s_it_j 
+        $$
+где $U(H)$ -- единичный шар в гильбертовом пространстве $H$, а
+$K_G$~--- абсолютная постоянная.
+    \end{theorem}
+    \pause\vspace{5pt}
+
+    Число $K_G$ называется \textit{константой Гротендика}, $1.5 < K_G < 1.8$. Для
+    комплексных матриц $1.3 < K_G^{\mathbb C} < 1.5$.
+\end{frame}
+
+
+\begin{frame}
+        $$
+    \max\limits_{x_i,y_j\in U(H)} \sum_{i,j} M_{i,j}\langle x_i,y_j\rangle
+    \le K_G \max\limits_{|s_i|,|t_j|\le 1}\sum_{i,j}M_{i,j}s_it_j.
+        $$
+
+Величина в левой части неравенства есть максимум $\sum_{i,j}
+M_{i,j}A_{i,j}=\langle M,A\rangle$ по всем матрицам $\gamma_2(A)\le 1$.
+    Следовательно, этот максимум есть ни что иное как сопряжённая норма
+    $\gamma_2^*(M)$.
+    \pause\vspace{5pt}
+
+Максимум в правой части неравенства Гротендика равен $\|M\|_{\infty\to 1}$. Следовательно,
+    $$
+    \|M\|_{\infty\to 1}\le \gamma_2^*(M) \le K_G\|M\|_{\infty\to 1}.
+    $$
+\end{frame}
+
+
+\begin{frame}{Доказательство теоремы Гротендика}
+    Рассмотрим величину
+    $$
+    K_{m,n} = \max\{\gamma_2^*(M)\colon M\in\R^{m\times n},\;
+    \|M\|_{\infty\to1}\le 1\},
+    $$
+    $$
+    \gamma_2^*(M) := \sup_{x_i,y_j\in U(H)} |\sum M_{i,j}\langle x_i,y_j\rangle|.
+    $$
+    \pause
+    Нужно доказать, что $K_{m,n}$ равномерно ограничена.
+    \pause
+
+    Зафиксируем матрицу $M$ нормы $\|M\|_{\infty\to 1}\le 1$,
+    оценим $\gamma_2^*(M)$.
+    \pause
+
+    Мы можем считать, что $H$~--- Гауссово Гильбертово пространство:
+    элементы $\xi \in H$ суть гауссовы случайные величины с нулевым средним
+    $\E\xi=0$, и
+    $$
+    \|\xi\|_H^2 := \mathsf{E}\xi^2.
+    $$
+    \pause
+    Эквивалентное условие: $\langle \xi,\eta\rangle_H = \E\xi\eta$.
+    \pause\vspace{5pt}
+
+    Почему так можно: рассмотрим последовательность $Z_1,\ldots,Z_n,\ldots$ независимых
+    стандартных гауссовых величин, положим
+    $$
+    H = \{\xi=\sum_{k=1}^\infty c_kZ_k\colon c\in\ell_2\},\quad \|\xi\|_H^2 =
+    \|c\|_{\ell_2}^2 = \E\xi^2.
+    $$
+\end{frame}
+
+
+\begin{frame}{Доказательство теоремы Гротендика (продолжение)}
+
+    Фиксируем $\delta\in(0,1/2)$. Пользуясь тем, что все $\xi\in H$ имеют
+    нормальное распределение, можем найти $L=L(\delta)$, такое что
+    $$
+    \E |\xi|^2\mathbf{1}_{\{|\xi|>L\}} \le \delta^2\quad\mbox{для $\xi\in
+    U(H)$.}
+    $$
+    \pause\vspace{5pt}
+
+    Таким образом, $\xi$ представляется в виде равномерно ограниченной
+    \textit{срезки} $\xi^L := \xi \mathbf{1}_{\{|\xi|\le L\}}$ и величины 
+    $\xi \mathbf{1}_{\{|\xi|> L\}}$ малой нормы.
+    \pause\vspace{5pt}
+    
+    Теперь запишем
+    $$
+    \sum M_{i,j}\langle \xi_i,\eta_j\rangle = 
+        \sum M_{i,j}\langle \xi_i^L + (\xi_i-\xi_i^L),\eta_j\rangle = 
+        $$
+        \pause
+        $$
+        = \sum M_{i,j}\langle \xi_i^L,\eta_j^L\rangle + \sum
+        M_{i,j}\langle\xi_i^L,\eta_j-\eta_j^L\rangle +
+        \sum M_{i,j}\langle \xi_i-\xi_i^L,\eta_j\rangle.
+    $$
+
+\end{frame}
+
+
+\begin{frame}{Доказательство теоремы Гротендика (окончание)}
+    Оценим первое слагаемое:
+    $$
+        \sum M_{i,j}\langle \xi_i^L,\eta_j^L\rangle  = \E \sum
+        M_{i,j}\xi_i^L \eta_j^L.
+    $$
+    \pause
+    В каждой точке имеем $|\xi_i^L(\omega)|, |\eta_j^L(\omega)|\le L$, 
+    значит, поточечно
+    $$
+    \sum M_{i,j}\xi_i^L(\omega)\eta_j^L(\omega) \le \|M\|_{\infty\to1} L^2 \le
+    L^2.
+    $$
+    \pause
+    Поэтому
+    $$
+    \E \sum M_{i,j}\xi_i^L\eta_j^L \le L^2.
+    $$
+    \pause
+    Остальные слагаемые легко оценить:
+    $$
+        |\sum M_{i,j}\langle\xi_i^L,\eta_j-\eta_j^L\rangle| \le \delta K_{m,n},
+    $$
+    $$
+        |\sum M_{i,j}\langle \xi_i-\xi_i^L,\eta_j\rangle| \le \delta K_{m,n}.
+    $$
+    \pause
+    Отсюда $\gamma_2^*(M) \le L^2 + 2\delta K_{m,n}$. Так как $M$ произвольна, то
+    $$
+    K_{m,n} \le L^2 + 2\delta K_{m,n},\quad K_{m,n} \le \frac{L^2}{1-2\delta}.
+    $$
+
+\end{frame}
+
+
+\begin{frame}{Мультипликатор Шура}
+    Фиксируем матрицу $M$. Рассмотрим \textit{мультипликатор Шура}: оператор в
+    пространстве матриц, действующий по
+формуле
+    $$
+    A\mapsto A\circ M,
+    $$
+    где $\circ$ -- произведение Шура, т.е.  $(A\circ M)_{i,j}=A_{i,j}M_{i,j}$.
+    \pause
+
+    Спектральная норма в пространстве матриц индуцирует норму
+    $$
+    \|S_M\|:= \max_{\|A\|_{2\to 2}\le 1} \|A\circ M\|_{2\to 2}.
+    $$
+    \pause
+
+    \begin{theorem}
+        Норма мультипликатора Шура равна $\gamma_2$-норме матрицы:
+        $$
+        \|S_M\| = \gamma_2(M).
+        $$
+    \end{theorem}
+    \pause
+
+    Мы приведём доказательство, основанное на технике полуопределённого
+    программирования (\textit{Semidefinite programming}, SDP), следуя статье T.Lee,
+    A.Shraibman, R.Spalek (2008).
+\end{frame}
+
+\begin{frame}
+        Полуопределённая оптимизация -- частный случай выпуклой оптимизации.
+        Напомним принцип Лагранжа для выпуклых задач -- теорему
+        Каруша-Куна-Таккера.
+    \pause\vspace{5pt}
+
+        Пусть дана выпуклая задача
+        $$
+        \begin{cases}
+            f_0(x)\to\min,\\
+            f_j(x)\le 0,\;j=1,\ldots,m,\\
+            x\in\mathcal A,
+        \end{cases}
+        \eqno{(*)}
+        $$
+        где все $f_j$ -- выпуклые функции, $\mathcal A\subset\mathbb
+        R^d$ -- выпуклое множество.
+    \pause
+
+        Предположим также, что выполнено условие Слейтера: $\exists
+        x_0\in\mathcal A\colon f_j(x_0)<0,\,j=1,\ldots,m$.
+\end{frame}
+        
+\begin{frame}
+    \begin{theorem}[KKT]
+        Вектор $\hat x\in\mathcal A$ является решением задачи (*) тогда и только
+        тогда, когда существуют множители Лагранжа $
+        \hat\lambda=(1,\hat\lambda_1,\ldots,\hat\lambda_m)$, $
+        \hat\lambda_j\ge 0$, такие что $\lambda_j(\hat x)f_j(\hat x)=0$,
+        $j=1,\ldots,m$, и функция Лагранжа
+        $$
+        L(x,\hat\lambda)=\sum_{j=0}^m\hat\lambda_j f_j(x)
+        $$
+        достигает минимума в $\hat x$.
+    \end{theorem}
+    \pause
+
+        Пара $(\hat x,\hat \lambda)$ является седловой точкой:
+        $$
+        L(\hat x,\lambda) \le L(\hat x,\hat\lambda) \le L(x,\hat\lambda),\quad x\in \mathcal
+        A,\;\lambda=(1,\lambda_1,\ldots,\lambda_m),\;\lambda_j\ge 0.
+        $$
+    \pause
+        Последнее означает, что $\hat\lambda$ является решением
+        двойственной задачи:
+        $$
+        \begin{cases}
+        g(\lambda):=\min_{x\in\mathcal A}L(x,\lambda)\to\max,\\
+        \lambda=(1,\lambda_1,\ldots,\lambda_m),\;\lambda_j\ge 0,
+        \end{cases}
+        $$
+        \pause
+        причём значения этих задач совпадают (и равны $L(\hat
+        x,\hat\lambda)$).
+\end{frame}
+
+\begin{frame}
+    Напомним: $\langle A,B\rangle = \sum A_{i,j}B_{i,j} = \tr(AB^t)$.
+
+        Следующая простая лемма лежит в основе SDP:
+
+        \begin{statement}
+            Пусть $A=A^t$. Тогда
+        $$
+            \displaystyle \inf_{X\ge 0}\langle A,X\rangle =
+        \begin{cases}
+            0,&\quad A\ge 0,\\
+            -\infty,&\quad \mbox{иначе}.
+        \end{cases}
+            $$
+        \end{statement}
+    \pause\vspace{5pt}
+
+        Докажем это утверждение. Если $A\not\ge 0$ и $x^tAx<0$ для
+        некоторого вектора $x$, то взяв $X=cxx^t$ и устремив $
+        c\to+\infty$, мы получим
+        $$
+        \langle A,X\rangle = c\tr(Axx^t) = c x^tAx \to -\infty.
+        $$
+    \pause\vspace{5pt}
+
+        Обратно, если $A\ge0$ и $X\ge 0$, то $\langle
+        A,X\rangle\ge 0$. Следовательно, минимум достигается при $
+        X=0$.
+\end{frame}
+
+
+\begin{frame}
+        Типичная задача SDP записывается следующим образом:
+        $$
+        \begin{cases}
+        f_0(X) := \langle C,X\rangle \to\min,\\
+        f_j(X) := \langle A_j,X\rangle - b_j \le 0,\;j=1,\ldots,m,\\
+        X\ge 0.
+        \end{cases}
+        $$
+        Параметры задачи: симметричные матрицы $C, A_j$ и вектор $b$.
+    \pause
+
+        Выписывая двойственную задачу, получаем выражение
+        $$
+        g(\lambda) = \min_{X\ge 0} \langle C+\sum_{j=1}^m\lambda_jA_j, X\rangle - \sum_{j=1}^m \lambda_jb_j.
+        $$
+        Применяя доказанную лемму, видим, что для того, чтобы $g\neq
+        -\infty$, необходимо, чтобы матрица $C+\sum_{j=1}^m \lambda_jA_j$
+        была неотрицательно определённой; при этом $g(\lambda) =
+        -\sum_{j=1}^m\lambda_jb_j$. Отсюда получаем следующую двойственную
+        задачу:
+    \pause\vspace{5pt}
+        $$
+        -\sum_{j=1}^m b_j\lambda_j\to\max,\quad C + \sum_{j=1}^m \lambda_jA_j
+        \ge 0,\quad\lambda_j \ge 0,\;j=1,\ldots,m.
+        $$
+\end{frame}
+
+\begin{frame}
+
+    Перейдём к доказательству теоремы.
+    Сведём всё к симметричным матрицам. (Наша матрица $M$ размера $m\times n$
+    может даже не быть квадратной!)\pause~Применим следующий приём для симметризации:
+    $$
+    \widehat M := \begin{pmatrix} 0_m & M \\ M^t & 0_n \end{pmatrix}.
+    $$
+        Здесь $0_n$ и $0_m$ -- квадратные нулевые матрицы соответствующего
+        размера. Ясно, что $\widehat M$ симметрична и имеет размер $
+        (n+m)\times(n+m)$.
+    \pause\vspace{5pt}
+
+        Нам также пригодится матрица $\widehat 1_{m,n}$ -- симметризация матрицы, состоящей из одних единиц. Через
+        $\mathrm{Id}$ обозначаем единичную матрицу (тождественный оператор).
+\end{frame}
+
+
+\begin{frame}
+        Теперь мы можем приступить к доказательству равенства
+        $\gamma_2(M)=\max_{\|A\|\le 1} \|A\circ M\|$. По определению, $
+        \gamma_2(M)\le \eta$ тогда и только тогда, когда найдутся вектора $
+        x_1,\ldots,x_m$ и $y_1,\ldots,y_n$ длины не более $
+        \sqrt{\eta}$, такие что $M_{i,j}=\langle x_i,y_j\rangle$.
+    \pause\vspace{5pt}
+
+        Рассмотрим матрицу Грама $X$ системы $(x_1,\ldots,x_m,y_1,\ldots,y_n)$: мы видим, что $X_{i,i}\le \eta$
+        для всех $i$, и что $X\circ \widehat 1_{m,n} = \widehat M$.
+    \pause\vspace{5pt}
+        
+        Отсюда ясно, что $\gamma_2$-норма матрицы $M$ равна значению следующей SDP-задачи:
+        $$
+        \begin{cases}
+        \eta\to\min,\\
+        X_{i,i} \le \eta,\;i=1,\ldots,m+n,\\
+        X\ge 0,\\
+        X\circ\widehat{1}_{m,n} = \widehat M.
+        \end{cases}
+        \eqno({\star})
+        $$
+        Оптимизация происходит по паре $(\eta,X)$.
+\end{frame}
+
+\begin{frame}
+    Далее мы составляем функцию Лагранжа. Условиям $X_{i,j}=M_{i,j}$
+    соответствуют множители $q_{i,j}$ (для $(i,j)$ из носителя $\widehat{1}_{m,n}$).
+    Вместе они образуют матрицу $Q=(q_{i,j})$ такую что $Q^t=Q$ и
+    $Q\circ\widehat{1}_{m,n}=Q$.
+    Итого:
+    \pause\vspace{5pt}
+        $$
+        L = \eta + \sum\limits_{i=1}^{m+n}\lambda_i(\langle e_ie_i^t,
+        X\rangle - \eta) + \langle Q, \widehat M-X\rangle,\quad
+        Q\circ\widehat{1}_{m,n}= Q,\; Q^t=Q.
+        $$
+        (Условий $q_{i,j}\ge 0$ нет, т.к. это множители при ограничениях вида
+        равенства.)
+    \pause\vspace{5pt}
+        Приходим к двойственной задаче:
+        $$
+        \begin{cases}
+        \langle Q,\widehat M\rangle \to \max,\\
+        \mathrm{diag}\,(\lambda) - Q \ge 0,\\
+            Q\circ\widehat{1}_{m,n} = Q,\\
+        \lambda_j \ge 0,\; \sum\lambda_j = 1.
+        \end{cases}
+        \eqno({\star\star})
+        $$
+        (Условие $\sum\lambda_j=1$ возникает из-за выражения
+        $\eta(1-\sum\lambda_j)$, если множитель не равен нулю, то
+        $\min\limits_{\eta,X\ge 0}=-\infty$.)
+\end{frame}
+
+\begin{frame}
+    Рассмотрим задачу ($\star\star$):
+    $$
+    \langle Q,\widehat M\rangle\to\max,\quad\mathrm{diag}\,(\lambda)-Q\ge
+    0,\quad Q\circ\widehat{1}_{m,n}=Q,\;\lambda_j\ge0,\sum\lambda_j=1.
+    $$
+    \pause\vspace{5pt}
+
+        Поскольку $\mathrm{diag}\,(\lambda) \ge Q$, то если какой-то
+        $\lambda_j=0$, то $j$-й столбец и $j$-я строка матрицы
+        $Q$ нулевые; мы можем их ``вычеркнуть'' т.к. они не влияют на
+        значение задачи; можно считать, что все $\lambda_j>0$.
+    \pause\vspace{5pt}
+        
+        Положим $
+        Q'_{i,j}:=Q_{i,j}\lambda_i^{-1/2}\lambda_j^{-1/2}$. Тогда условие $
+        \mathrm{diag}\,(\lambda) \ge Q$ равносильно условию $\mathrm{Id}\ge Q'$. По
+        построению $Q'$ имеет вид $Q'=\widehat S$ для некоторой
+        матрицы $S$.
+    \pause\vspace{5pt}
+        
+        Упражнение. Докажите, что следующие неравенства равносильны:
+        \begin{itemize}
+            \item $\mathrm{Id}\ge \widehat S$;
+            \item $\|S\|\le 1$;
+            \item $\|\widehat S\|\le 1$.
+        \end{itemize}
+    \pause\vspace{5pt}
+        
+        Итак, условие $\mathrm{Id}\ge Q'$  равносильно условию $
+        \|S\|\le 1$.
+\end{frame}
+
+\begin{frame}
+
+        Наконец, пусть $\alpha_j = \lambda_j^{1/2}$, тогда целевая функция
+        задачи принимает вид
+        $$
+        \langle Q,\widehat M\rangle = \langle Q'\circ\alpha\alpha^t,
+        \widehat M\rangle = \alpha^t(\widehat S\circ \widehat M)\alpha.
+        $$
+    \pause
+
+        При этом условие на $\lambda$ означает что $\alpha$ --
+        единичный вектор с неотрицательными координатами.
+    \pause
+        
+        Максимизируя по $\alpha$, получаем
+        $$
+        \max_{|\alpha|=1,\alpha_j\ge 0} \alpha^t(\widehat
+        S\circ\widehat M)\alpha = \max_{|\beta|=|\gamma|=1,\beta_i\ge
+        0,\gamma_j\ge 0}\beta^t(S\circ M)\gamma.
+        $$
+    \pause\vspace{5pt}
+
+        Осталось максимизировать по $S\colon \|S\|\le 1$; при этом условие
+        неотрицательности координат $\beta,\gamma$ пропадёт, т.к.
+        умножение строки или столбца $S$ на минус единицу не меняет норму.
+        Итак, значение задачи равно
+        $$
+        \max_{\|S\|\le 1,|\beta|=|\gamma|=1}\beta^t(S\circ
+        M)\gamma = \max_{\|S\|\le 1}\|S\circ M\|.
+        $$
+\end{frame}
+
+\begin{frame}
+
+    Мы доказали, что $\gamma_2$-норма равна значению SDP-задачи ($\star$),
+        а норма оператора Шура равна значению двойственной задачи
+        ($\star\star$). Поскольку условие Слейтера выполнено, эти значения
+        совпадают и теорема доказана!
+    \pause\vspace{5pt}
+
+    \begin{thebibliography}{XXXX}
+        \bibitem{LSS08} T.Lee, A.Shraibman, R.Spalek, ``A Direct Product Theorem
+            for Discrepancy'', 2008.
+
+        \bibitem{G} D.J.H.~Garling, \textit{Inequalities: A Journey into Linear
+            Analysis}. 2007.
+    \end{thebibliography}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,315 @@
+\documentclass[12pt,handout]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usetheme{Boadilla}
+
+\colorlet{beamer@blendedblue}{green!40!black}
+
+\setbeamertemplate{navigation symbols}{}
+\title{Спецкурс 2020/2021: ``Геометрические и комбинаторные свойства матриц и
+аппроксимация'' \\ Блок лекций ``Сложность матриц и аппроксимация'' \\ Лекция 0:
+``Вспомогательные факты из линейной алгебры''}
+\renewcommand\le{\leqslant}
+\renewcommand\ge{\geqslant}
+
+\newcommand\R{\mathbb R}
+\newcommand\N{\mathbb N}
+\newcommand\Z{\mathbb Z}
+\newcommand\T{\mathbb T}
+\newcommand\CC{\mathbb C}
+\newcommand\eps{\varepsilon}
+
+
+\newcommand{\tvec}{\mathbf{t}}
+
+\newcommand\E{\mathsf E}
+\renewcommand\P{\mathsf P}
+
+%\newtheorem*{theorem}{Теорема}
+%\newtheorem{lemma}{Лемма}
+\newtheorem*{statement}{Statement}
+%\newtheorem*{conjecture}{Гипотеза}
+%\newtheorem*{remark}{Замечание}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rig}{rig}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Arg}{Arg}
+\DeclareMathOperator{\Real}{Re}
+
+\begin{document}
+\maketitle
+
+\begin{frame}{Матрицы и операторы}
+    Пусть $\mathbb{F}$~--- поле (нам интересны $\R$, $\mathbb{C}$, $\mathbb F_p$).
+
+    $\mathbb{F}^{m\times n}$~--- пространство матриц размера
+    $m\times n$ над $\mathbb F$.
+
+    Матрица $A\in\mathbb{F}^{m\times n}$ задаёт линейное отображение (линейный
+    оператор) $\mathbb{F}^n\to\mathbb{F}^m$ по правилу $x\mapsto Ax$.
+
+    Линейное отображение $\mathcal A\colon V\to W$ после выбора базисов
+    $V=\langle v_1,\ldots,v_n\rangle$ и $W=\langle w_1,\ldots,w_m\rangle$ можно
+    отождествить с матрицей $A$: $\mathcal A v_j = \sum A_{i,j}w_i$.
+
+    Иногда \textit{оператором} называют только линейное отображение
+    пространства \textit{в себя}: $\mathcal A\colon V\to V$. В этом случае задаётся один
+    базис $V=\langle v_1,\ldots,v_n\rangle$, матрица будет квадратной.
+    При замене базиса матрица преобразуется по правилу $A'=C^{-1}AC$.
+
+    Композиция операторов $\leftrightarrow$ умножение матриц (в подходящих
+    базисах):
+    $$
+    A\in\mathbb{F}^{m\times n},\;B\in\mathbb{F}^{n\times k} \Rightarrow
+    AB\in\mathbb{F}^{m\times k},
+    $$
+    $$
+    (AB)_{i,j} = \sum_{s=1}^n A_{i,s}B_{s,j} = \langle A_i, B^j\rangle.
+    $$
+\end{frame}
+
+\begin{frame}{Матрицы и операторы}
+
+    Некоторые величины корректно определены для \textit{операторов} $\mathcal
+    A\colon V\to V$. Например, $\tr\mathcal A := \tr A = \sum A_{i,i}$ не зависит
+    от выбора базиса, поскольку $\tr(C^{-1}AC) = \tr(CC^{-1}A) = \tr A$.
+    Более общий инвариант~--- характеристический многочлен
+    $\chi_{\mathcal A}(t) := \det(A-tE)$. Другой пример~--- \textit{ранг}: $\rank\mathcal A =
+    \rank A = \dim\mathrm{Im}(\mathcal A)$.
+
+    \pause\vspace{5pt}
+
+    Нас, однако же, будут интересовать в основном характеристики, не инвариантные
+    относительно замены базиса и потому относящиеся к \textit{матрицам}, а не
+    операторам. Пример: $\rank_{\eps}(A)$~--- минимально возможный ранг, который
+    можно получить, изменив каждый элемент матрицы $A$ не более чем на $\eps$.
+
+\end{frame}
+
+\begin{frame}{Нормы в пространствах векторов и матриц}
+
+    $\ell_p^n$~--- пространство $\R^n$ с нормой
+    $$
+    \|x\|_p := \begin{cases}
+        (\sum_{i=1}^n |x_i|^p)^{1/p},&\quad 1\le p<\infty,\\
+        \max_{1\le i\le n}|x_i|,&\quad p=\infty.
+    \end{cases}
+    $$
+    В евклидовом случае пишем сокращённо $|x|:=\|x\|_2$.
+
+    Пусть $A\in\R^{m\times n}$. Определим нормы:
+\begin{itemize}
+    \item норма Фробениуса $\|A\|_F := (\sum A_{i,j}^2)^{1/2}$;
+    \item $(p,q)$-нормы $\|A\|_{p\to q} := \max\limits_{\|x\|_p\le 1}\|Ax\|_q$;
+    \item в частности, спектральная норма $\|A\|_{2\to2} := \max\limits_{|x|\le 1}
+        |Ax|$;
+    \item в частности, максимум $\|A\|_\infty := \|A\|_{1\to\infty} =
+        \max_{i,j}|A_{i,j}|$;
+\end{itemize}
+
+Операторные нормы обладают свойством $\|AB\|\le \|A\|\|B\|$; не все нормы
+таковы.
+
+\end{frame}
+
+
+\begin{frame}{Ранг матрицы}
+    Эквивалентные определения ранга матрицы $A\in\mathbb{F}^{m\times n}$:
+    \begin{itemize}
+        \item размерность образа $\dim\mathrm{Im}\mathcal A$ оператора с
+            матрицей $A$ (т.е. ранг это операторное понятие);
+        \item размерность образа $\dim\{Ax\colon x\in\mathbb F^n\}$;
+        \item размерность пространства столбцов $\dim\langle A^j\rangle$;
+        \item размерность пространства строк $\dim\langle A_i\rangle$; отсюда
+            $\rank A=\rank A^t$;
+        \item максимальный размер невырожденного минора:
+            $\max\{|I|=|J|\colon \det A[I,J]\ne 0\}$;
+        \item минимальное число одноранговых матриц (т.е. вида $R_{i,j}=a_ib_j$)
+            в представлении $A=R^{(1)}+R^{(2)}+\ldots+R^{(r)}$;
+        \item минимальная размерность $r$, в которой найдутся вектора
+            $x_i\in\R^r$, $y_j\in\R^r$, такие что $A_{i,j}=\langle
+            x_i,y_j\rangle$~--- \textbf{упражнение}.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Собственные числа}
+
+    Число $\lambda$ называется собственным числом оператора $\mathcal A$, если
+    найдётся ненулевой вектор $v$, для которого $\mathcal Av=v$. Собственные
+    числа~--- корни многочлена $\chi_{\mathcal A}(t)$.
+    \vspace{5pt}
+
+    Пусть $\mathbb{F}=\R$, в пространстве $V$ введено скалярное
+    произведение $\langle \cdot,\cdot\rangle$. Оператор $\mathcal A\colon V\to
+    V$ называется самосопряжённым, если $\langle Ax,y\rangle = \langle
+    x,Ay\rangle$. Это равносильно тому, что его матрица симметрична: $A=A^t$ (не
+    важно в каком базисе).
+    \vspace{5pt}
+
+    Самосопряжённый оператор диагонализуем в ортонормированном базисе.
+    Следовательно, симметричная матрица представляется в виде $A=U^t\Lambda U$ с
+    ортогональной $U$ и диагональной $\Lambda$.
+
+\end{frame}
+
+
+\begin{frame}{Сингулярное разложение}
+    Сингулярное разложение, Singular Value Decomposition (SVD), матрицы
+    $A\in\mathbb{R}^{m\times n}$:
+    $$
+    A = U\Sigma V^t,
+    $$
+    где $U$ и $V$~--- ортогональные матрицы, $\Sigma$~--- матрица размера
+    $m\times n$, на диагонали которой стоят неотрицательные числа
+    $\Sigma_{i,i}=\sigma_i$, причём
+    $$
+    \sigma_1\ge\sigma_2\ge\ldots\ge\sigma_{\min(m,n)}\ge 0,
+    $$
+    а вне диагонали~--- нули. SVD всегда существует. То есть, любой оператор работает так:
+    ``поворачивает'' вектор ($x\mapsto Vx$), растягивает по осям, потом опять
+    ``поворачивает''.
+    
+    Числа $(\sigma_j)$ определены однозначно; они называются \textit{сингулярными
+    числами} матрицы $A$. В отличие от собственных чисел, они определены (и
+    вещественны!) для любой матрицы.
+
+\end{frame}
+
+\begin{frame}{Сингулярное разложение}
+    Определим нормы Шаттена (Schatten):
+    $$
+    \|A\|_{S_p} := \|(\sigma_j(A))_{j=1}^{\min(m,n)}\|_p,\quad 1\le p\le \infty.
+    $$
+    \textbf{Упражнения.}
+    \begin{itemize}
+        \item Докажите существование SVD и однозначность $\Sigma$, рассмотрев
+            матрицу $AA^t$. Выведите, что $\sigma_j^2(A)=\lambda_j(AA^t)$.
+        \item Покажите, что сингулярные числа унитарно-инвариантны, т.е.
+            $\sigma_j(U'A)=\sigma_j(AV')$ для любых ортогональных $U'$, $V'$;
+            сформулируйте следствие для $S_p$-норм.
+        \item Докажите, что $S_2$-норма равна норме Фробениуса:
+            $\sum\sigma_j^2(A) = \sum A_{i,j}^2$, а $S_\infty$-норма равна $2\to2$ норме.
+        \item Покажите, что $\tr A \le \sum |A_{i,i}|\le \|A\|_{S_1}$?
+        \item Проверьте, что $\|A\|_{S_1} := \sum \sigma_j(A)$ является нормой
+            (т.е. $\|A+B\|_{S_1} \le \|A\|_{S_1} + \|B\|_{S_1}$);
+        \item То же для $S_p$-нормы.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Сингулярное разложение и ранг}
+
+    Пусть $\sigma_1(A)\ge\ldots\ge \sigma_r(A)>\sigma_{r+1}(A)=\ldots=0$. Тогда
+    $\rank A=r$. То есть, ранг = кол-во ненулевых сингулярных чисел.
+    \vspace{5pt}
+
+    Ранг~--- разрывная функция на $\mathbb R^{m\times n}$, с ней сложно
+    работать. Сингулярные числа позволяют связать ранг с непрерывными
+    характеристиками матрицы.
+    
+    Пример. Мы знаем, что $\|\sigma(A)\|_\infty = \|A\|_{2\to 2}$ и $\|\sigma(A)\|_2 = \|A\|_F$.
+    Поскольку $\|x\|_2 \le r^{1/2}\|x\|_\infty$ для $x\in\R^r$, получаем
+    следствие:
+    $$
+    \rank A \ge \left(\frac{\|A\|_F}{\|A\|_{2\to 2}}\right)^2.
+    $$
+
+    Отображение $A\mapsto\sigma(A)$ липшицево в евклидовой норме
+    (Wielandt-Hoffman):
+    $$
+    |\sigma(A)-\sigma(B)| = (\sum_k (\sigma_k(A)-\sigma_k(B))^2)^{1/2} \le
+    \|A-B\|_F.
+    $$
+
+\end{frame}
+
+\begin{frame}{Сингулярное разложение и ранг}
+
+    \begin{theorem}[Ecckart-Young, 1936]
+        $$
+        \min_{\rank B\le r}\|A-B\|_F = (\sum_{k>r}\sigma_k^2(A))^{1/2}.
+        $$
+    \end{theorem}
+
+    Напомним доказательство теоремы.
+        Общий случай сводится к квадратным матрицам (всегда можно дополнить
+        нулями).  В силу унитарной инвариантности можно считать матрицу $A$ диагональной:
+        $A=\Sigma=\mathrm{diag}(\sigma_1,\ldots,\sigma_n)$. Ясно, что для оценки
+        сверху можно взять $B=\mathrm{diag}(\sigma_1,\ldots,\sigma_r,0,\ldots)$. 
+
+        Оценка снизу.
+        Величина $\|A-B\|_F^2$ равна $\sum_j|A^j-B^j|^2$ (по столбцам).
+        Рассмотрим пространство $L_r$, натянутое на столбцы $B^j$, тогда
+        $|A^j-B^j|$ не меньше расстояния $\rho(A^j,L_r)$, и
+        $$
+        \min_{\rank B\le r}\|A-B\|_F^2 = \min_{\dim L_r\le r}\sum_{j=1}^n
+        \rho^2(A^j,L_r) = \min_{\dim L_r\le r}\sum_{j=1}^n \sigma_j^2
+        \rho^2(e_j,L_r).
+        $$
+
+\end{frame}
+
+\begin{frame}{Ecckart-Young, продолжение}
+    Выберем в $L_r$ ортонормированный базис $\{v_1,\ldots,v_r\}$. Тогда проекция
+    на $L_r$ имеет вид $P_{L_r}x=\sum_{k=1}^r v_k\langle v_k,x\rangle$, откуда
+    $$
+    w_j := \rho(e_j,L_r)^2 = |e_j|^2 - |P_{L_r}e_j|^2 = 1 - \sum_{k=1}^r v_{k,j}^2,
+    $$
+    $$
+    \sum_{j=1}^n \sigma_j^2 \rho^2(e_j,L_r) = \sum_{j=1}^n w_j \sigma_j^2.
+    $$
+    Проанализируем коэффициенты $w_j$, $j=1,\ldots,n$. Имеем:
+    \begin{itemize}
+        \item[(i)] $w_j\in[0,1]$;
+        \item[(ii)] $\sum_{j=1}^n w_j = n - r$, так как $\sum_{j=1}^n\sum_{k=1}^r v_{k,j}^2 = r$.
+    \end{itemize}
+
+    В силу монотонности $\sigma_j$, при ограничениях (i), (ii) сумма $\sum
+    w_j\sigma_j^2$ будет минимальна, если $w_1=\ldots=w_r=0$ и
+    $w_{r+1}=\ldots=w_{n}=1$. При таких $w_j$ получаем как раз оценку
+    $\sum_{j>r}\sigma_j^2$.
+
+\end{frame}
+
+\begin{frame}{Положительная определённость}
+    Пусть $A\in\R^{n\times n}$~--- симметричная матрица.
+    
+    Назовём $A$ неотрицательно определённой (positive semi-definite, PSD), если $x^tAx\ge 0$ для любого вектора $x$.
+    Положительно определённая, если $x^tAx>0$ для $x\ne 0$. Обозначение: $A\ge
+    0$ (соотв., $A>0$).
+
+ Можно ввести частичный порядок на матрицах: $A\ge B\Leftrightarrow A-B\ge 0$.
+
+    \textbf{Упражнения.}
+    \begin{itemize}
+        \item Если $A\ge 0$, то $A=BB^t$ для некоторой $B$ (т.е. $A$ это
+            \textit{матрица Грама}).
+        \item Если $A\ge 0$, то $A=R^1+\ldots+R^r$, где $R^j$ имеют
+            вид $aa^t$.
+        \item Если $A\ge 0$ и $B\ge 0$, то $A\circ B\ge 0$ и $A\otimes B$. Где $A\circ B$~---
+            произведение Шура-Адамара, поэлементное, $(A\circ B)_{i,j} =
+            A_{i,j}B_{i,j}$. Произведение Кронекера $A\otimes B$ состоит из
+            блоков вида $A_{i,j}B$.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Разное}
+
+    Матрица = функция двух аргументов (дискретных).
+
+    Если аргументы $x,y\in\{0,1\}^n$, эта структура может быть удобна. Например,
+    для $M(x,y)=p(x,y)$, где $p$~--- полином из $m$ мономов, имеем $\rank M\le
+    m$ (\textbf{упражнение}!).
+
+\end{frame}
+
+
+\end{document}

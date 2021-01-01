@@ -12,9 +12,11 @@ def render():
         shutil.rmtree(dst_dir)
     os.mkdir(dst_dir)
     os.mkdir(dst_dir + '/conf2018')
+    os.mkdir(dst_dir + '/greedyconf2019')
     os.mkdir(dst_dir + '/sbs100')
     os.mkdir(dst_dir + '/en')
     os.mkdir(dst_dir + '/en/conf2018')
+    os.mkdir(dst_dir + '/en/greedyconf2019')
     os.mkdir(dst_dir + '/en/sbs100')
 
     env = jinja2.Environment(
@@ -23,24 +25,25 @@ def render():
     common = [
         'index.html', 'about.html', 'staff.html', 'contacts.html',
         'publications.html',
+        'sbs100/index.html',
+        'greedyconf2019/index.html',
     ]
-    russian = ['seminar.html', 'spk2018.html']
+
+    # russian-only
+    russian = ['seminar.html', 'spk2018.html', 'spk2019.html', 'spk2020.html']
     english = []
 
+    # conf-2018
     conf_tmpl = [
         'index.html', 'committee.html', 'program.html',
         'directions.html', 'participants.html', 'contacts.html',
     ]
     english += ['en/conf2018/' + t for t in conf_tmpl]
 
-    sbs100_tmpl = [
-        'index.html',
-    ]
-    russian += ['sbs100/' + t for t in sbs100_tmpl]
-    english += ['en/sbs100/' + t for t in sbs100_tmpl]
-
     templates = common + ['en/' + t for t in common] + russian + english
     templates.append('conf2018/index.html')
+
+    print(templates)
 
     for tmpl_name in templates:
         tmpl = env.get_template(tmpl_name)
